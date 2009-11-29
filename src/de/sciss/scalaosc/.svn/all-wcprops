@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/tintantmare/!svn/ver/301/scalaosc/src/de/sciss/scalaosc
+END
+OSCChannel.scala
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/tintantmare/!svn/ver/362/scalaosc/src/de/sciss/scalaosc/OSCChannel.scala
+END
+OSCBundle.scala
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/OSCBundle.scala
+END
+Test.scala
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/Test.scala
+END
+Atom.scala
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/Atom.scala
+END
+OSCTransmitter.scala
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/OSCTransmitter.scala
+END
+OSCException.scala
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/tintantmare/!svn/ver/300/scalaosc/src/de/sciss/scalaosc/OSCException.scala
+END
+OSCClient.scala
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/OSCClient.scala
+END
+ScalaOSC.scala
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/ScalaOSC.scala
+END
+OSCMessage.scala
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/tintantmare/!svn/ver/368/scalaosc/src/de/sciss/scalaosc/OSCMessage.scala
+END
+OSCReceiver.scala
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/OSCReceiver.scala
+END
+OSCPacketCodec.scala
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/OSCPacketCodec.scala
+END
+OSCPacket.scala
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svnroot/tintantmare/!svn/ver/367/scalaosc/src/de/sciss/scalaosc/OSCPacket.scala
+END
