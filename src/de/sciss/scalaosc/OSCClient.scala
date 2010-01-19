@@ -121,7 +121,7 @@ import java.net.{ InetSocketAddress, SocketAddress }
  *	@see		OSCServer
  *
  *  @author		Hanns Holger Rutz
- *  @version	0.37, 12-May-09
+ *  @version	0.37, 19-Jan-10
  *
  *	@since		NetUtil 0.30
  */
@@ -164,11 +164,14 @@ object OSCClient {
 class OSCClient( rcv: OSCReceiver, trns: OSCTransmitter, val protocol: Symbol )
 extends OSCInputChannel with OSCOutputChannel
 {
-	private var bufSize = OSCChannel.DEFAULTBUFSIZE
+	import OSCChannel._
+	
+	private var bufSize = DEFAULTBUFSIZE
 
 	def action_=( f: (OSCMessage, SocketAddress, Long) => Unit ) = {
 		rcv.action = f
 	}
+	def action: (OSCMessage, SocketAddress, Long) => Unit = rcv.action
 
 	/**
 	 *	Queries the client side socket address. This is the address
@@ -208,6 +211,7 @@ extends OSCInputChannel with OSCOutputChannel
 		rcv.target  = target
 		trns.target = target
 	}
+	def target: SocketAddress = rcv.target
 	
 	def codec_=( c: OSCPacketCodec ) {
 		rcv.codec	= c
@@ -304,7 +308,7 @@ extends OSCInputChannel with OSCOutputChannel
 	def start {
 		if( !trns.isConnected ) {
 			trns.connect
-			rcv.channel_=( trns.channel )
+			rcv.channel = trns.channel
 		}
 		rcv.start
 	}
@@ -372,17 +376,25 @@ extends OSCInputChannel with OSCOutputChannel
 	 *	@see	#kDumpHex
 	 *	@see	#kDumpBoth
 	 */
-	override def dumpOSC( mode: Int, stream: PrintStream ) {
-		dumpIncomingOSC( mode, stream )
-		dumpOutgoingOSC( mode, stream )
+	override def dumpOSC( mode: Int = DUMP_TEXT,
+					     stream: PrintStream = System.err,
+					     filter: (OSCPacket) => Boolean = NO_FILTER ) {
+		dumpIncomingOSC( mode, stream, filter )
+		dumpOutgoingOSC( mode, stream, filter )
 	}
 
-	def dumpIncomingOSC( mode: Int, stream: PrintStream ) {
-		rcv.dumpOSC( mode, stream )
-	}
+	def dumpIncomingOSC( mode: Int = DUMP_TEXT,
+					     stream: PrintStream = System.err,
+					     filter: (OSCPacket) => Boolean = NO_FILTER ) {
 
-	def dumpOutgoingOSC( mode: Int, stream: PrintStream ) {
-		trns.dumpOSC( mode, stream )
+		rcv.dumpOSC( mode, stream, filter )
+	}
+	
+	def dumpOutgoingOSC( mode: Int = DUMP_TEXT,
+					     stream: PrintStream = System.err,
+					     filter: (OSCPacket) => Boolean = NO_FILTER ) {
+
+		trns.dumpOSC( mode, stream, filter )
 	}
 
 	/**

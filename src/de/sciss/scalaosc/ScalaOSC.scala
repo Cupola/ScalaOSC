@@ -25,7 +25,7 @@ package de.sciss.scalaosc
 import _root_.java.util.{ MissingResourceException, ResourceBundle }
 
 object ScalaOSC {
-	private def VERSION		= 0.10
+	private def VERSION		= 0.11
 	private def resBundle	= ResourceBundle.getBundle( "ScalaOSCStrings" )
  
 	def main( args: Array[ String ]) {

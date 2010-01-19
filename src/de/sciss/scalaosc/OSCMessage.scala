@@ -53,9 +53,7 @@ with LinearSeqLike[ Any, OSCMessage ]
 	// ---- OSCPacket implementation ----
 
 	private[scalaosc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
-		var i = 0
-		val numSpaces = nestCount << 1
-		while( i < numSpaces ) { stream.print( ' ' ); i += 1 }
+		stream.print( "  " * nestCount )
 		stream.print( "[ " )
 		printEscapedStringOn( stream, name )
 		for( v <- args ) {

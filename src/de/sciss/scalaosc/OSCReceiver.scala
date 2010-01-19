@@ -31,6 +31,7 @@ import _root_.java.nio.channels.{ AlreadyConnectedException, ClosedChannelExcept
 	 							  DatagramChannel, SelectableChannel,
 	 							  SocketChannel }
 import OSCChannel._
+import ScalaOSC._
 
 object OSCReceiver {
 	/**
@@ -97,7 +98,7 @@ object OSCReceiver {
 //			new TCPOSCReceiver( localAddress )
 			
 		} else {
-			throw new IllegalArgumentException( ScalaOSC.getResourceString( "errUnknownProtocol" ) + protocol )
+			throw new IllegalArgumentException( getResourceString( "errUnknownProtocol" ) + protocol )
 		}
 	}
 
@@ -269,7 +270,7 @@ extends OSCChannel with Runnable {
 	@throws( classOf[ IOException ])
 	def start {
 		generalSync.synchronized {
-			if( Thread.currentThread == thread ) throw new IllegalStateException( ScalaOSC.getResourceString( "errNotInThisThread" ))
+			if( Thread.currentThread == thread ) throw new IllegalStateException( getResourceString( "errNotInThisThread" ))
 
 			if( listening && ((thread == null) || !thread.isAlive) ) {
 				listening		= false
@@ -310,7 +311,7 @@ extends OSCChannel with Runnable {
 	@throws( classOf[ IOException ])
 	def stop {
         generalSync.synchronized {
-			if( Thread.currentThread == thread ) throw new IllegalStateException( ScalaOSC.getResourceString( "errNotInThisThread" ))
+			if( Thread.currentThread == thread ) throw new IllegalStateException( getResourceString( "errNotInThisThread" ))
 
 			if( listening ) {
 				listening = false
@@ -343,7 +344,7 @@ extends OSCChannel with Runnable {
 
 	def bufferSize_=( size: Int ) {
 		bufSync.synchronized {
-			if( listening ) throw new IllegalStateException( ScalaOSC.getResourceString( "errNotWhileActive" ))
+			if( listening ) throw new IllegalStateException( getResourceString( "errNotWhileActive" ))
 			bufSize	= size
 		}
 	}
@@ -378,6 +379,7 @@ extends OSCChannel with Runnable {
 //	protected def channel_=( ch: SelectableChannel ) : Unit
 // XXX just to make it compile
 	private[ scalaosc ] def channel_=( ch: SelectableChannel ) : Unit
+	private[ scalaosc ] def channel: SelectableChannel
 
 	@throws( classOf[ IOException ])
 	protected def closeChannel : Unit
@@ -388,7 +390,7 @@ extends OSCChannel with Runnable {
 			byteBuf.flip
 			val p = codec.decode( byteBuf )
 			
-			if( dumpMode != DUMP_OFF ) {
+			if( (dumpMode != DUMP_OFF) && dumpFilter.apply( p )) {
 				printStream.print( "r: " )
 				if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
 				if( (dumpMode & DUMP_HEX)  != 0 ) {
@@ -498,16 +500,17 @@ extends OSCReceiver( 'udp, addr, dch == null, c ) {
 	@throws( classOf[ IOException ])
 	private[ scalaosc ] def channel_=( ch: SelectableChannel ) {
 		generalSync.synchronized {
-			if( listening ) throw new IllegalStateException( ScalaOSC.getResourceString( "errNotWhileActive" ))
+			if( listening ) throw new IllegalStateException( getResourceString( "errNotWhileActive" ))
 		
 			val dchTmp	= ch.asInstanceOf[ DatagramChannel ]
 			if( !dchTmp.isBlocking ) {
 				dchTmp.configureBlocking( true )
 			}
-			if( dchTmp.isConnected ) throw new IllegalStateException( ScalaOSC.getResourceString( "errChannelConnected" ))
+			if( dchTmp.isConnected ) throw new IllegalStateException( getResourceString( "errChannelConnected" ))
 			dch = dchTmp
 		}
 	}
+	private[ scalaosc ] def channel : SelectableChannel = dch
 		
 	def localAddress : InetSocketAddress = {
 		generalSync.synchronized {
@@ -527,17 +530,16 @@ extends OSCReceiver( 'udp, addr, dch == null, c ) {
 	@throws( classOf[ IOException ])
 	def connect {
 		generalSync.synchronized {
-			if( listening ) throw new IllegalStateException( ScalaOSC.getResourceString( "errNotWhileActive" ))
+			if( listening ) throw new IllegalStateException( getResourceString( "errNotWhileActive" ))
 
 			if( (dch != null) && !dch.isOpen ) {
-				if( !revivable ) throw new IOException( ScalaOSC.getResourceString( "errCannotRevive" ))
+				if( !revivable ) throw new IOException( getResourceString( "errCannotRevive" ))
 				dch = null
 			}
 			if( dch == null ) {
 				val newCh = DatagramChannel.open
 				newCh.socket.bind( localAddress )
-//				channel = newCh
-				channel_=( newCh )
+				channel = newCh
 			}
 		}
 	}

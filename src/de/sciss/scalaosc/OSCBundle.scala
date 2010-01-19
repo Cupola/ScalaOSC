@@ -106,7 +106,13 @@ with LinearSeqLike[ OSCPacket, OSCBundle ]
 	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedBundleSize( this )
 
 	private[scalaosc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
-		println( "OSCBundle.printTextOn : not yet implemented." )
-		// XXX
+		stream.print( "  " * nestCount )
+		stream.print( "[ #bundle, " + timetag )
+		val ncInc = nestCount + 1
+		for( v <- args ) {
+			stream.println( ',' )
+			v.printTextOn( c, stream, ncInc )
+		}
+		if( nestCount == 0 ) stream.println( " ]" ) else stream.print( " ]" )
 	}
 }

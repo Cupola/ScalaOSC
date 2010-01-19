@@ -23,6 +23,7 @@
 package de.sciss.scalaosc
 
 import _root_.java.io.IOException
+import ScalaOSC._
 
 object OSCException {
 	private val errMessages = Array(
@@ -52,7 +53,7 @@ object OSCException {
 	val RECEIVE  = 4
  
 	def getMessage( causeType: Int, message: String = null ) : String = {
-			 ScalaOSC.getResourceString( errMessages( causeType ) +
+			 getResourceString( errMessages( causeType ) +
                 (if( message == null ) "" else (": " + message)) )
     }
 }

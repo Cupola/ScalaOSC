@@ -48,11 +48,15 @@ object OSCChannel {
 	 *	size (8K at the moment).
 	 */
 	val DEFAULTBUFSIZE = 8192
+	
+	private[scalaosc] def NO_FILTER( p: OSCPacket ) = true
 }
 
 trait OSCChannel {
     protected var dumpMode					= OSCChannel.DUMP_OFF
     protected var printStream : PrintStream	= null
+    protected var dumpFilter : (OSCPacket) => Boolean =
+    	OSCChannel.NO_FILTER
 	
 	/**
 	 *	Queries the transport protocol used by this communicator.
@@ -117,9 +121,12 @@ trait OSCChannel {
 	 *	@see	#DUMP_HEX
 	 *	@see	#DUMP_BOTH
 	 */
-	def dumpOSC( mode: Int, stream: PrintStream = System.err ) {
+	def dumpOSC( mode: Int = OSCChannel.DUMP_TEXT,
+				 stream: PrintStream = System.err,
+				 filter: (OSCPacket) => Boolean = OSCChannel.NO_FILTER ) {
 		dumpMode	= mode
 		printStream	= stream
+		dumpFilter	= filter
 	}
 
 	/**
@@ -136,6 +143,7 @@ trait OSCInputChannel
 extends OSCChannel
 {
 	def action_=( f: (OSCMessage, SocketAddress, Long) => Unit )
+	def action: (OSCMessage, SocketAddress, Long) => Unit
 	
 	/**
 	 *	Starts the communicator.
@@ -174,7 +182,9 @@ extends OSCChannel
 	 *	@see	#dumpOSC( int, PrintStream )
 	 *	@see	#dumpOutgoingOSC( int, PrintStream )
 	 */
-	def dumpIncomingOSC( mode: Int = OSCChannel.DUMP_TEXT, stream: PrintStream = System.err );
+	def dumpIncomingOSC( mode: Int = OSCChannel.DUMP_TEXT,
+					     stream: PrintStream = System.err,
+					     filter: (OSCPacket) => Boolean = OSCChannel.NO_FILTER )
 }
 
 trait OSCOutputChannel
@@ -193,5 +203,7 @@ extends OSCChannel
 	 *	@see	#dumpOSC( int, PrintStream )
 	 *	@see	#dumpIncomingOSC( int, PrintStream )
 	 */
-	def dumpOutgoingOSC( mode: Int = OSCChannel.DUMP_TEXT, stream: PrintStream = System.err );
+	def dumpOutgoingOSC( mode: Int = OSCChannel.DUMP_TEXT,
+						 stream: PrintStream = System.err,
+					     filter: (OSCPacket) => Boolean = OSCChannel.NO_FILTER )
 }

@@ -28,6 +28,7 @@ import _root_.java.net.{ InetAddress, InetSocketAddress, SocketAddress }
 import _root_.java.nio.{ BufferOverflowException, ByteBuffer }
 import _root_.java.nio.channels.{ DatagramChannel, SelectableChannel }
 import OSCChannel._
+import ScalaOSC._
 
 /**
  * 	@author		Hanns Holger Rutz
@@ -88,7 +89,7 @@ object OSCTransmitter {
 //			new TCPOSCTransmitter( localAddress )
 			
 		} else {
-			throw new IllegalArgumentException( ScalaOSC.getResourceString( "errUnknownProtocol" ) + protocol.name )
+			throw new IllegalArgumentException( getResourceString( "errUnknownProtocol" ) + protocol.name )
 		}
 	}
 
@@ -254,7 +255,7 @@ extends OSCTransmitter( 'udp, addr, dch == null ) {
 	def connect {
 		sync.synchronized {
 			if( (dch != null) && !dch.isOpen ) {
-				if( !revivable ) throw new IOException( ScalaOSC.getResourceString( "errCannotRevive" ))
+				if( !revivable ) throw new IOException( getResourceString( "errCannotRevive" ))
 				dch = null
 			}
 			if( dch == null ) {
@@ -286,7 +287,7 @@ extends OSCTransmitter( 'udp, addr, dch == null ) {
 	def send( p: OSCPacket, target: SocketAddress ) {
 		try {
 			sync.synchronized {
-				if( dch == null ) throw new IOException( ScalaOSC.getResourceString( "errChannelNotConnected" ));
+				if( dch == null ) throw new IOException( getResourceString( "errChannelNotConnected" ))
 
 				checkBuffer
 				byteBuf.clear
@@ -295,7 +296,7 @@ extends OSCTransmitter( 'udp, addr, dch == null ) {
 				p.encode( codec, byteBuf )
 				byteBuf.flip
 
-				if( dumpMode != DUMP_OFF ) {
+				if( (dumpMode != DUMP_OFF) && dumpFilter.apply( p )) {
 					printStream.print( "s: " )
 					if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
 					if( (dumpMode & DUMP_HEX)  != 0 ) {
