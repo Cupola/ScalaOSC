@@ -2,7 +2,7 @@
  * 	OSCChannel.scala
  *  (ScalaOSC)
  *
- *  Copyright (c) 2008-2009 Hanns Holger Rutz. All rights reserved.
+ *  Copyright (c) 2008-2010 Hanns Holger Rutz. All rights reserved.
  *
  *	This library is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU Lesser General Public
@@ -52,11 +52,12 @@ object OSCChannel {
 	private[scalaosc] def NO_FILTER( p: OSCPacket ) = true
 }
 
+import OSCChannel._
+
 trait OSCChannel {
-    protected var dumpMode					= OSCChannel.DUMP_OFF
+    protected var dumpMode					= DUMP_OFF
     protected var printStream : PrintStream	= null
-    protected var dumpFilter : (OSCPacket) => Boolean =
-    	OSCChannel.NO_FILTER
+    protected var dumpFilter : (OSCPacket) => Boolean = NO_FILTER
 	
 	/**
 	 *	Queries the transport protocol used by this communicator.
@@ -121,9 +122,9 @@ trait OSCChannel {
 	 *	@see	#DUMP_HEX
 	 *	@see	#DUMP_BOTH
 	 */
-	def dumpOSC( mode: Int = OSCChannel.DUMP_TEXT,
+	def dumpOSC( mode: Int = DUMP_TEXT,
 				 stream: PrintStream = System.err,
-				 filter: (OSCPacket) => Boolean = OSCChannel.NO_FILTER ) {
+				 filter: (OSCPacket) => Boolean = NO_FILTER ) {
 		dumpMode	= mode
 		printStream	= stream
 		dumpFilter	= filter
@@ -182,9 +183,9 @@ extends OSCChannel
 	 *	@see	#dumpOSC( int, PrintStream )
 	 *	@see	#dumpOutgoingOSC( int, PrintStream )
 	 */
-	def dumpIncomingOSC( mode: Int = OSCChannel.DUMP_TEXT,
+	def dumpIncomingOSC( mode: Int = DUMP_TEXT,
 					     stream: PrintStream = System.err,
-					     filter: (OSCPacket) => Boolean = OSCChannel.NO_FILTER )
+					     filter: (OSCPacket) => Boolean = NO_FILTER )
 }
 
 trait OSCOutputChannel
@@ -203,7 +204,7 @@ extends OSCChannel
 	 *	@see	#dumpOSC( int, PrintStream )
 	 *	@see	#dumpIncomingOSC( int, PrintStream )
 	 */
-	def dumpOutgoingOSC( mode: Int = OSCChannel.DUMP_TEXT,
+	def dumpOutgoingOSC( mode: Int = DUMP_TEXT,
 						 stream: PrintStream = System.err,
-					     filter: (OSCPacket) => Boolean = OSCChannel.NO_FILTER )
+					     filter: (OSCPacket) => Boolean = NO_FILTER )
 }
