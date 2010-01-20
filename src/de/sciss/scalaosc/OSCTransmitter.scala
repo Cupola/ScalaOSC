@@ -297,11 +297,13 @@ extends OSCTransmitter( 'udp, addr, dch == null ) {
 				byteBuf.flip
 
 				if( (dumpMode != DUMP_OFF) && dumpFilter.apply( p )) {
-					printStream.print( "s: " )
-					if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
-					if( (dumpMode & DUMP_HEX)  != 0 ) {
-						OSCPacket.printHexOn( printStream, byteBuf )
-						byteBuf.flip
+					printStream.synchronized {
+						printStream.print( "s: " )
+						if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
+						if( (dumpMode & DUMP_HEX)  != 0 ) {
+							OSCPacket.printHexOn( printStream, byteBuf )
+							byteBuf.flip
+						}
 					}
 				}
 					

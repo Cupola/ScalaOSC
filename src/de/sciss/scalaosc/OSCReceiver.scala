@@ -391,11 +391,13 @@ extends OSCChannel with Runnable {
 			val p = codec.decode( byteBuf )
 			
 			if( (dumpMode != DUMP_OFF) && dumpFilter.apply( p )) {
-				printStream.print( "r: " )
-				if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
-				if( (dumpMode & DUMP_HEX)  != 0 ) {
-					byteBuf.flip
-					OSCPacket.printHexOn( printStream, byteBuf )
+				printStream.synchronized {
+					printStream.print( "r: " )
+					if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
+					if( (dumpMode & DUMP_HEX)  != 0 ) {
+						byteBuf.flip
+						OSCPacket.printHexOn( printStream, byteBuf )
+					}
 				}
 			}
 			dispatchPacket( p, sender, OSCBundle.NOW )	// OSCBundles will override this dummy time tag
