@@ -49,17 +49,38 @@ object OSCBundle {
  
   private val SECONDS_FROM_1900_TO_1970 = 2208988800L
  
-  def millis( when: Long, packets: OSCPacket* ) : OSCBundle = {
-	val secsSince1900	= when / 1000 + SECONDS_FROM_1900_TO_1970
-	val secsFractional	= ((when % 1000) << 32) / 1000
+  /**
+   *  Creates a bundle with timetag given by
+   *  a system clock value in milliseconds since
+   *  jan 1 1970, as returned by System.currentTimeMillis
+   */
+  def millis( abs: Long, packets: OSCPacket* ) : OSCBundle = {
+	val secsSince1900	= abs / 1000 + SECONDS_FROM_1900_TO_1970
+	val secsFractional	= ((abs % 1000) << 32) / 1000
 	val timetag			= (secsSince1900 << 32) | secsFractional
 	new OSCBundle( timetag, packets: _* )
   }
   
+  /**
+   *  Creates a bundle with timetag given by
+   *  a relative value in seconds, as required
+   *  for example for scsynth offline rendering
+   */
+  def secs( delta: Double, packets: OSCPacket* ) : OSCBundle = {
+  	 val timetag	= (delta.toLong << 32) + ((delta % 1.0) * 0x100000000L + 0.5).toLong
+	 new OSCBundle( timetag, packets: _* )
+  }
+  
+  /**
+   *  Creates a bundle with special timetag 'now'
+   */
   def apply( packets: OSCPacket* ) : OSCBundle = {
 	 new OSCBundle( NOW, packets: _* )
   }
 
+  /**
+   *  Creates a bundle with raw formatted timetag
+   */
   def apply( timetag: Long, packets: OSCPacket* ) : OSCBundle = {
 	 new OSCBundle( timetag, packets: _* )
   }
