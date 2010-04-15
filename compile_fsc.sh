@@ -1,7 +1,7 @@
 #!/bin/sh
 echo "Compiling..."
-fsc -deprecation -cp libraries/scalacheck_2.8.0.Beta1-RC1-1.7-SNAPSHOT.jar -d build/classes/ -sourcepath src/ src/de/sciss/scalaosc/*.scala
+fsc -deprecation -d out/production/ScalaOSC/ -sourcepath src/ src/de/sciss/scalaosc/*.scala
 echo "Archiving..."
-jar cf build/ScalaOSC.jar -C build/classes/ .
-jar uf build/ScalaOSC.jar -C resources/ .
+jar cf ScalaOSC.jar -C out/production/ScalaOSC/ .
+jar uf ScalaOSC.jar -C resources/ .
 echo "Done."

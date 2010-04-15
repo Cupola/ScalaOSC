@@ -1,38 +1,36 @@
 /*
- * 	OSCMessage.scala
+ *  OSCMessage.scala
  *  (ScalaOSC)
  *
- *  Copyright (c) 2008-2009 Hanns Holger Rutz. All rights reserved.
+ *  Copyright (c) 2008-2010 Hanns Holger Rutz. All rights reserved.
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation; either
- *	version 2.1 of the License, or (at your option) any later version.
+ *	 This library is free software; you can redistribute it and/or
+ *	 modify it under the terms of the GNU Lesser General Public
+ *	 License as published by the Free Software Foundation; either
+ *	 version 2.1 of the License, or (at your option) any later version.
  *
- *	This library is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *	Lesser General Public License for more details.
+ *	 This library is distributed in the hope that it will be useful,
+ *	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *	 Lesser General Public License for more details.
  *
- *	Below is a copy of the GNU Lesser General Public License
+ *	 Below is a copy of the GNU Lesser General Public License
  *
- *	For further information, please contact Hanns Holger Rutz at
- *	contact@sciss.de
- *
+ *	 For further information, please contact Hanns Holger Rutz at
+ *	 contact@sciss.de
  */
+
 package de.sciss.scalaosc
 
-import _root_.java.io.{ IOException, PrintStream }
-import _root_.java.nio.{ BufferOverflowException, ByteBuffer }
-
-import _root_.scala.collection.{ LinearSeqLike }
-import _root_.scala.collection.mutable.{ Builder }
+import java.io.PrintStream
+import collection.LinearSeqLike
+import collection.mutable.Builder
 
 import OSCPacket._
+import java.nio.ByteBuffer
 
 /**
- *	@author		Hanns Holger Rutz
- *	@version	0.12, 26-Nov-09
+ *    @version	0.13, 15-Apr-10
  */
 case class OSCMessage( name: String, args: Any* )
 extends OSCPacket
@@ -46,6 +44,8 @@ with LinearSeqLike[ Any, OSCMessage ]
 
 	override def iterator : Iterator[ Any ] = args.iterator
 	override def drop( n: Int ) : OSCMessage = new OSCMessage( name, args.drop( n ): _* )
+   def apply( idx: Int ) = args( idx )
+   def length: Int = args.length
 
 	def encode( c: OSCPacketCodec, b: ByteBuffer ) : Unit = c.encodeMessage( this, b )
 	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedMessageSize( this )

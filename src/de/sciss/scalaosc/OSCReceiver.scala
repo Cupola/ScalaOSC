@@ -1,35 +1,33 @@
 /*
- * 	OSCReceiver.scala
+ *  OSCReceiver.scala
  *  (ScalaOSC)
  *
- *  Copyright (c) 2008-2009 Hanns Holger Rutz. All rights reserved.
+ *  Copyright (c) 2008-2010 Hanns Holger Rutz. All rights reserved.
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation; either
- *	version 2.1 of the License, or (at your option) any later version.
+ *	 This library is free software; you can redistribute it and/or
+ *	 modify it under the terms of the GNU Lesser General Public
+ *	 License as published by the Free Software Foundation; either
+ *	 version 2.1 of the License, or (at your option) any later version.
  *
- *	This library is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *	Lesser General Public License for more details.
+ *	 This library is distributed in the hope that it will be useful,
+ *	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *	 Lesser General Public License for more details.
  *
- *	Below is a copy of the GNU Lesser General Public License
+ *	 Below is a copy of the GNU Lesser General Public License
  *
- *	For further information, please contact Hanns Holger Rutz at
- *	contact@sciss.de
- *
+ *	 For further information, please contact Hanns Holger Rutz at
+ *	 contact@sciss.de
  */
+
 package de.sciss.scalaosc
 
-import _root_.java.io.{ IOException, PrintStream }
-import _root_.java.net.{ DatagramPacket, DatagramSocket, InetAddress,
-					     InetSocketAddress, Socket, SocketAddress,
-					     UnknownHostException }
-import _root_.java.nio.{ BufferUnderflowException, ByteBuffer }
-import _root_.java.nio.channels.{ AlreadyConnectedException, ClosedChannelException,
-	 							  DatagramChannel, SelectableChannel,
-	 							  SocketChannel }
+import java.io.{ IOException, PrintStream }
+import java.net.{ DatagramPacket, DatagramSocket, InetAddress, InetSocketAddress, Socket, SocketAddress,
+                  UnknownHostException }
+import java.nio.{ BufferUnderflowException, ByteBuffer }
+import java.nio.channels.{ AlreadyConnectedException, ClosedChannelException, DatagramChannel, SelectableChannel,
+	 							   SocketChannel }
 import OSCChannel._
 import ScalaOSC._
 
