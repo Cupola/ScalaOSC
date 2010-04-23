@@ -30,9 +30,15 @@ import OSCPacket._
 import java.nio.ByteBuffer
 
 /**
- *    @version	0.13, 15-Apr-10
+ *    @version	0.14, 22-Apr-10
  */
-case class OSCMessage( name: String, args: Any* )
+object OSCMessage {
+   def apply( name: String, args: Any* ) = new OSCMessage( name, args: _* )
+//   def unapply( m: OSCMessage ): Option[ OSCMessage ] = Some( m )
+   def unapplySeq( m: OSCMessage ): Option[ Tuple2[ String, Seq[ Any ]]]= Some( m.name -> m.args )
+}
+
+class OSCMessage( val name: String, val args: Any* )
 extends OSCPacket
 with LinearSeqLike[ Any, OSCMessage ]
 {
@@ -49,6 +55,8 @@ with LinearSeqLike[ Any, OSCMessage ]
 
 	def encode( c: OSCPacketCodec, b: ByteBuffer ) : Unit = c.encodeMessage( this, b )
 	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedMessageSize( this )
+
+   override def toString = args.mkString( "OSCMessage(" + name + ", ", ", ", ")" )
 
 	// ---- OSCPacket implementation ----
 
