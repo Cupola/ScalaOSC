@@ -56,7 +56,14 @@ with LinearSeqLike[ Any, OSCMessage ]
 	def encode( c: OSCPacketCodec, b: ByteBuffer ) : Unit = c.encodeMessage( this, b )
 	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedMessageSize( this )
 
+   // recreate stuff we lost when removing case modifier
    override def toString = args.mkString( "OSCMessage(" + name + ", ", ", ", ")" )
+   override def hashCode = name.hashCode * 41 + args.hashCode 
+   override def equals( other: Any ) = other match {
+      case that: OSCMessage => (that isComparable this) && this.name == that.name && this.args == that.args
+      case _ => false
+   }
+   protected def isComparable( other: Any ) = other.isInstanceOf[ OSCMessage ]
 
 	// ---- OSCPacket implementation ----
 
