@@ -2,26 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="68747673-70a5-43b0-bd46-9d75ec5ca024" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/resources/ScalaOSCStrings.properties" afterPath="$PROJECT_DIR$/src/main/resources/ScalaOSCStrings.properties" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/ScalaOSC.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/ScalaOSC.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build.xml" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCMessage.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCMessage.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCChannel.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCChannel.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCClient.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCClient.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCPacketCodec.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCPacketCodec.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCException.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCException.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCTransmitter.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCTransmitter.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/libraries/scalacheck_2.8.0.Beta1-RC1-1.7-SNAPSHOT.jar" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/Test.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/Test.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/project/build.properties" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/Atom.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/Atom.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCPacket.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCPacket.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ScalaOSC.iml" afterPath="$PROJECT_DIR$/ScalaOSC.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCReceiver.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCReceiver.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/de/sciss/scalaosc/OSCBundle.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCBundle.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.textile" afterPath="$PROJECT_DIR$/README.textile" />
     </list>
     <ignored path=".idea/workspace.xml" />
     <ignored path="ScalaOSC.iws" />

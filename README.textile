@@ -8,12 +8,13 @@ For project status, API and current version, visit "www.sciss.de/scalaOSC":http:
 
 h3. requirements / installation
 
-ScalaOSC currently compiles against the Scala 2.8.0.RC1. The repository contains a project file for Intellij IDEA 9 CE, and project files for sbt. Targets for sbt:
+ScalaOSC currently compiles against the Scala 2.8.0.RC1. The repository contains a project file for Intellij IDEA 9 CE, and project files for sbt. Standard targets for sbt:
 
 * @clean@
 * @compile@
+* @doc@
 * @package@
-* @run@
+* @run@ __arguments...__
 
 h3. download
 
