@@ -2,7 +2,7 @@
  *  ScalaOSC.scala
  *  (ScalaOSC)
  *
- *  Copyright (c) 2008-2009 Hanns Holger Rutz. All rights reserved.
+ *  Copyright (c) 2008-2010 Hanns Holger Rutz. All rights reserved.
  *
  *	 This library is free software; you can redistribute it and/or
  *	 modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,17 @@ package de.sciss.scalaosc
 
 import java.util.{ MissingResourceException, ResourceBundle }
 
+/**
+ *    @version 0.14, 27-May-10
+ */
 object ScalaOSC {
-	private def VERSION		= 0.13
-	private def resBundle	= ResourceBundle.getBundle( "ScalaOSCStrings" )
- 
+   val name                = "ScalaOSC"
+   val version             = 0.14
+   val copyright           = "(C)opyright 2008-2010 Hanns Holger Rutz"
+//   private val resBundle	= ResourceBundle.getBundle( "ScalaOSCStrings" )
+
+   def versionString = (version + 0.001).toString.substring( 0, 4 )
+
 	def main( args: Array[ String ]) {
 		var testo = false
 	
@@ -49,10 +56,7 @@ object ScalaOSC {
 		}
 
 		if( !testo ) {
-			System.err.println( "\nScalaOSC v" + VERSION + "\n" +
-				getCopyrightString + "\n\n" +
-				getCreditsString + "\n\n  " +
-				getResourceString( "errIsALibrary" ))
+         printInfo
 
 			System.out.println( "\nThe following demos are available:\n" +
 				"  --testTransmitter\n"
@@ -60,22 +64,27 @@ object ScalaOSC {
 			System.exit( 1 )
 		}
 	}
- 
- 	/**
-	 *	Returns the library's version.
-	 *
-	 *	@return	the current version of NetUtil
-	 */
-	def getVersion = VERSION
 
-	/**
-	 *	Returns a copyright information string
-	 *	about the library
-	 *
-	 *	@return	text string which can be displayed
-	 *			in an about box
-	 */
-	def getCopyrightString = getResourceString( "copyright" )
+   def printInfo {
+      println( "\n" + name + " v" + versionString + "\n" + copyright +
+         ". All rights reserved.\n\nThis is a library which cannot be executed directly.\n" )
+   }
+   
+// 	/**
+//	 *	Returns the library's version.
+//	 *
+//	 *	@return	the current version of NetUtil
+//	 */
+//	def getVersion = VERSION
+
+//	/**
+//	 *	Returns a copyright information string
+//	 *	about the library
+//	 *
+//	 *	@return	text string which can be displayed
+//	 *			in an about box
+//	 */
+//	def getCopyrightString = getResourceString( "copyright" )
 
 	/**
 	 *	Returns a license and website information string
@@ -84,26 +93,29 @@ object ScalaOSC {
 	 *	@return	text string which can be displayed
 	 *			in an about box
 	 */
-	def getCreditsString = getResourceString( "credits" )
+	val credits = """This library is released under the GNU Lesser General Public License.
+All software provided "as is", no warranties, no liability!
+For project status visit http://www.sciss.de/scalaOSC."""
 
-	/**
-	 *	Returns a string from the library's string
-	 *	resource bundle (currently localized
-	 *	english and german). This is used by the
-	 *	classes of the library, you shouldn't use
-	 *	it yourself.
-	 *
-	 *	@param	key	lookup dictionary key
-	 *	@return	(localized) human readable string for
-	 *			the given key or placeholder string if
-	 *			the resource wasn't found
-	 */
-	def getResourceString( key: String ) : String = {
-		try {
-			resBundle.getString( key )
-		}
-		catch { case e: MissingResourceException =>
-			"[Missing Resource: " + key + "]"
-		}
-	}
+
+//	/**
+//	 *	Returns a string from the library's string
+//	 *	resource bundle (currently localized
+//	 *	english and german). This is used by the
+//	 *	classes of the library, you shouldn't use
+//	 *	it yourself.
+//	 *
+//	 *	@param	key	lookup dictionary key
+//	 *	@return	(localized) human readable string for
+//	 *			the given key or placeholder string if
+//	 *			the resource wasn't found
+//	 */
+//	private[scalaosc] def getResourceString( key: String ) : String = {
+//		try {
+//			resBundle.getString( key )
+//		}
+//		catch { case e: MissingResourceException =>
+//			"[" + key + "]"
+//		}
+//	}
 }

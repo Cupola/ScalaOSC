@@ -31,6 +31,9 @@ import java.nio.channels.{ AlreadyConnectedException, ClosedChannelException, Da
 import OSCChannel._
 import ScalaOSC._
 
+/**
+ *    @version 0.11, 27-May-10
+ */
 object OSCReceiver {
 	/**
 	 *	Creates a new instance of a revivable <code>OSCReceiver</code>, using
@@ -46,7 +49,7 @@ object OSCReceiver {
 	 *	to be connected to one particular target, so <code>setTarget</code> is
 	 *	must be called prior to <code>connect</code> or <code>startListening</code>! 
 	 *
-	 *	@param	protocol	the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
+	 *	@param	transport	the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
 	 *	@param	port		the port number for the OSC socket, or <code>0</code> to use an arbitrary free port
 	 *	@param	loopBack	if <code>true</code>, the &quot;loopback&quot; address (<code>&quot;127.0.0.0.1&quot;</code>)
 	 *						is used which limits communication to the local machine. If <code>false</code>, the
@@ -58,9 +61,10 @@ object OSCReceiver {
 	 *	@throws	IllegalArgumentException	if an illegal protocol is used
 	 */
 	@throws( classOf[ IOException ])
-	def apply( protocol: Symbol, port: Int = 0, loopBack: Boolean = false, c: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
+	def apply( transport: OSCTransport, port: Int = 0, loopBack: Boolean = false,
+              codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
 		val localAddress = new InetSocketAddress( if( loopBack ) "127.0.0.1" else "0.0.0.0", port )
-		withAddress( protocol, localAddress, c )
+		withAddress( transport, localAddress, codec )
 	}
 
 	/**
@@ -76,7 +80,7 @@ object OSCReceiver {
 	 *	to be connected to one particular target, so <code>setTarget</code> is
 	 *	must be called prior to <code>connect</code> or <code>startListening</code>! 
 	 *
-	 *	@param	protocol		the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
+	 *	@param	transport		the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
 	 *	@param	localAddress	a valid address to use for the OSC socket. If the port is <code>0</code>,
 	 *							an arbitrary free port is picked when the receiver is started. (you can find out
 	 *							the actual port in this case by calling <code>getLocalAddress()</code> after the
@@ -88,15 +92,16 @@ object OSCReceiver {
 	 *	@throws	IllegalArgumentException	if an illegal protocol is used
 	 */
 	@throws( classOf[ IOException ])
-	def withAddress( protocol: Symbol, localAddress: InetSocketAddress, c: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
-		if( protocol == 'udp ) {
-			new UDPOSCReceiver( localAddress, c )
+	def withAddress( transport: OSCTransport, localAddress: InetSocketAddress,
+                    codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
+		if( transport == UDP ) {
+			new UDPOSCReceiver( localAddress, codec )
 			
 //		} else if( protocol == 'tcp ) {
 //			new TCPOSCReceiver( localAddress )
 			
 		} else {
-			throw new IllegalArgumentException( getResourceString( "errUnknownProtocol" ) + protocol )
+			throw new IllegalArgumentException( "Unsupported transport : " + transport.name )
 		}
 	}
 
@@ -117,8 +122,8 @@ object OSCReceiver {
 	 *	@throws	IOException	if a networking error occurs while configuring the socket
 	 */
 	@throws( classOf[ IOException ])
-	def withChannel( dch: DatagramChannel, c: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
-		new UDPOSCReceiver( dch, c )
+	def withChannel( dch: DatagramChannel, codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
+		new UDPOSCReceiver( dch, codec )
 	}
 
 //	/**
@@ -146,7 +151,7 @@ object OSCReceiver {
 	}
 }
 
-abstract class OSCReceiver( val protocol: Symbol, localAddr: InetSocketAddress,
+abstract class OSCReceiver( val transport: OSCTransport, protected val addr: InetSocketAddress,
                             protected val revivable: Boolean, var codec: OSCPacketCodec )
 extends OSCChannel with Runnable {
 //	private val		collListeners   			= new ArrayList[ OSCListener ]
@@ -268,7 +273,7 @@ extends OSCChannel with Runnable {
 	@throws( classOf[ IOException ])
 	def start {
 		generalSync.synchronized {
-			if( Thread.currentThread == thread ) throw new IllegalStateException( getResourceString( "errNotInThisThread" ))
+			if( Thread.currentThread == thread ) throw new IllegalStateException( "Cannot be called from reception thread" )
 
 			if( listening && ((thread == null) || !thread.isAlive) ) {
 				listening		= false
@@ -309,7 +314,7 @@ extends OSCChannel with Runnable {
 	@throws( classOf[ IOException ])
 	def stop {
         generalSync.synchronized {
-			if( Thread.currentThread == thread ) throw new IllegalStateException( getResourceString( "errNotInThisThread" ))
+			if( Thread.currentThread == thread ) throw new IllegalStateException( "Cannot be called from reception thread" )
 
 			if( listening ) {
 				listening = false
@@ -342,7 +347,7 @@ extends OSCChannel with Runnable {
 
 	def bufferSize_=( size: Int ) {
 		bufSync.synchronized {
-			if( listening ) throw new IllegalStateException( getResourceString( "errNotWhileActive" ))
+			if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
 			bufSize	= size
 		}
 	}
@@ -485,11 +490,11 @@ extends OSCChannel with Runnable {
 	def isConnected : Boolean
 }
 
-private class UDPOSCReceiver( addr: InetSocketAddress, private var dch: DatagramChannel, c: OSCPacketCodec )
-extends OSCReceiver( 'udp, addr, dch == null, c ) {
-	def this( localAddress: InetSocketAddress, c: OSCPacketCodec ) = this( localAddress, null, c )
-	def this( dch: DatagramChannel, c: OSCPacketCodec ) {
-		this( new InetSocketAddress( dch.socket.getLocalAddress, dch.socket.getLocalPort ), dch, c )
+private class UDPOSCReceiver( _addr: InetSocketAddress, private var dch: DatagramChannel, _codec: OSCPacketCodec )
+extends OSCReceiver( UDP, _addr, dch == null, _codec ) {
+	def this( localAddress: InetSocketAddress, codec: OSCPacketCodec ) = this( localAddress, null, codec )
+	def this( dch: DatagramChannel, codec: OSCPacketCodec ) {
+		this( new InetSocketAddress( dch.socket.getLocalAddress, dch.socket.getLocalPort ), dch, codec )
 	}
 			
 //	def codec : OSCPacketCodec = c
@@ -500,13 +505,13 @@ extends OSCReceiver( 'udp, addr, dch == null, c ) {
 	@throws( classOf[ IOException ])
 	private[ scalaosc ] def channel_=( ch: SelectableChannel ) {
 		generalSync.synchronized {
-			if( listening ) throw new IllegalStateException( getResourceString( "errNotWhileActive" ))
+			if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
 		
 			val dchTmp	= ch.asInstanceOf[ DatagramChannel ]
 			if( !dchTmp.isBlocking ) {
 				dchTmp.configureBlocking( true )
 			}
-			if( dchTmp.isConnected ) throw new IllegalStateException( getResourceString( "errChannelConnected" ))
+			if( dchTmp.isConnected ) throw new IllegalStateException( "Channel is not connected" )
 			dch = dchTmp
 		}
 	}
@@ -530,10 +535,10 @@ extends OSCReceiver( 'udp, addr, dch == null, c ) {
 	@throws( classOf[ IOException ])
 	def connect {
 		generalSync.synchronized {
-			if( listening ) throw new IllegalStateException( getResourceString( "errNotWhileActive" ))
+			if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
 
 			if( (dch != null) && !dch.isOpen ) {
-				if( !revivable ) throw new IOException( getResourceString( "errCannotRevive" ))
+				if( !revivable ) throw new IOException( "Channel cannot be revived" )
 				dch = null
 			}
 			if( dch == null ) {

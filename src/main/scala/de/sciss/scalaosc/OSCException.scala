@@ -27,8 +27,9 @@ import ScalaOSC._
 
 object OSCException {
 	private val errMessages = Array(
-        "errOSCTimeOut", "errOSCFailed", "errOSCBuffer", "errOSCFormat",
-        "errOSCTypeTag", "errOSCArgClass", "errOSCReceive"
+        "OSC Communication Timeout", "OSC Command Failed", "OSC Buffer Overflow or Underflow",
+        "Illegal OSC Message Format", "Unsupported OSC Type Tag", "OSC message cannot contain argument of class",
+        "Error while receiving OSC packet"
     )
  
     /**
@@ -52,10 +53,8 @@ object OSCException {
 	 */
 	val RECEIVE  = 4
  
-	def getMessage( causeType: Int, message: String = null ) : String = {
-			 getResourceString( errMessages( causeType ) +
-                (if( message == null ) "" else (": " + message)) )
-    }
+	def getMessage( causeType: Int, message: String = null ) =
+			 errMessages( causeType ) + (if( message == null ) "" else (": " + message))
 }
 
 /**
@@ -63,19 +62,18 @@ object OSCException {
  *  Typical reasons are communication timeout and
  *  buffer underflows or overflows.
  *
- *  @author		Hanns Holger Rutz
- *  @version	0.10, 26-May-05
+ *  @version	0.11, 27-May-10
  */
-class OSCException( causeType: Int, message: String )
+class OSCException( val causeType: Int, message: String )
 extends IOException( OSCException.getMessage( causeType, message )) {
   	
-	/**
-	 *  Queries the cause of the exception
-	 *
-	 *  @return cause of the exception, e.g. <code>BUFFER</code>
-	 *			if a buffer underflow or overflow occured
-	 */
-	def getCauseType = causeType
+//	/**
+//	 *  Queries the cause of the exception
+//	 *
+//	 *  @return cause of the exception, e.g. <code>BUFFER</code>
+//	 *			if a buffer underflow or overflow occured
+//	 */
+//	def getCauseType = causeType
 	
 	override def getLocalizedMessage : String = getMessage
 }

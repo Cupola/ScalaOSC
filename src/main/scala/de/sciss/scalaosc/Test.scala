@@ -70,7 +70,7 @@ object Test {
 	}
 	
   def receiver {
-	    val rcv = OSCReceiver.apply( 'udp, 0, true )
+	    val rcv = OSCReceiver.apply( UDP, 0, true )
 	    rcv.start
 	    
 	    println( "Test.receiver\n\n" +

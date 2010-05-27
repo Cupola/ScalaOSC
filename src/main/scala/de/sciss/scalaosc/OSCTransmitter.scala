@@ -42,7 +42,7 @@ object OSCTransmitter {
 	 *	local socket, not the remote (or target) port. This can be set
 	 *	using the <code>setTarget</code> method!
 	 *
-	 *	@param	protocol	the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
+	 *	@param	transport   the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
 	 *	@param	port		the port number for the OSC socket, or <code>0</code> to use an arbitrary free port
 	 *	@param	loopBack	if <code>true</code>, the &quot;loopback&quot; address (<code>&quot;127.0.0.0.1&quot;</code>)
 	 *						is used which limits communication to the local machine. If <code>false</code>, the
@@ -54,11 +54,12 @@ object OSCTransmitter {
 	 *	@throws	IllegalArgumentException	if an illegal protocol is used
 	 */
 	@throws( classOf[ IOException ])
-	def apply( protocol: Symbol, port: Int = 0, loopBack: Boolean = false, codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCTransmitter = {
+	def apply( transport: OSCTransport, port: Int = 0, loopBack: Boolean = false,
+              codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCTransmitter = {
 		val localAddress = if( loopBack )
 			new InetSocketAddress( "127.0.0.1", port ) else
 			new InetSocketAddress( InetAddress.getLocalHost, port )
-		withAddress( protocol, localAddress, codec )
+		withAddress( transport, localAddress, codec )
 	}
 
 	/**
@@ -68,7 +69,7 @@ object OSCTransmitter {
 	 *	local socket, not the remote (or target) socket. This can be set
 	 *	using the <code>setTarget</code> method!
 	 *
-	 *	@param	protocol		the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
+	 *	@param	transport		the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
 	 *	@param	localAddress	a valid address to use for the OSC socket. If the port is <code>0</code>,
 	 *							an arbitrary free port is picked when the transmitter is connected. (you can find out
 	 *							the actual port in this case by calling <code>getLocalAddress()</code> after the
@@ -80,15 +81,16 @@ object OSCTransmitter {
 	 *	@throws	IllegalArgumentException	if an illegal protocol is used
 	 */
 	@throws( classOf[ IOException ])
-	def withAddress( protocol: Symbol, localAddress: InetSocketAddress, codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCTransmitter = {
-		if( protocol == 'udp ) {
+	def withAddress( transport: OSCTransport, localAddress: InetSocketAddress,
+                    codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCTransmitter = {
+		if( transport == UDP ) {
 			new UDPOSCTransmitter( localAddress, codec )
 			
 //		} else if( protocol == 'tcp ) {
 //			new TCPOSCTransmitter( localAddress )
 			
 		} else {
-			throw new IllegalArgumentException( getResourceString( "errUnknownProtocol" ) + protocol.name )
+			throw new IllegalArgumentException( "Unsupported transport : " + transport.name )
 		}
 	}
 
@@ -133,14 +135,15 @@ object OSCTransmitter {
 //	}
 }
 
-abstract class OSCTransmitter( val protocol: Symbol, protected val localAddr: InetSocketAddress, protected val revivable: Boolean )
+abstract class OSCTransmitter( val transport: OSCTransport, protected val localAddr: InetSocketAddress,
+                               protected val revivable: Boolean )
 extends OSCChannel {
 	protected val sync						= new AnyRef
 	protected var allocBuf 					= true
 	private var bufSize						= DEFAULTBUFSIZE
-	protected var byteBuf : ByteBuffer		= null
+	protected var byteBuf : ByteBuffer	= null
  
-    var target: SocketAddress		= null
+    var target: SocketAddress		      = null
 	
 	/**
 	 *	Establishes connection for transports requiring
@@ -224,7 +227,7 @@ extends OSCChannel {
  }
 
 private class UDPOSCTransmitter( addr: InetSocketAddress, private var dch: DatagramChannel, var codec: OSCPacketCodec )
-extends OSCTransmitter( 'udp, addr, dch == null ) {
+extends OSCTransmitter( UDP, addr, dch == null ) {
 //  private var dch: DatagramChannel = null
   
 	def this( localAddress: InetSocketAddress, codec: OSCPacketCodec ) = this( localAddress, null, codec )
@@ -254,7 +257,7 @@ extends OSCTransmitter( 'udp, addr, dch == null ) {
 	def connect {
 		sync.synchronized {
 			if( (dch != null) && !dch.isOpen ) {
-				if( !revivable ) throw new IOException( getResourceString( "errCannotRevive" ))
+				if( !revivable ) throw new IOException( "Channel cannot be revived" )
 				dch = null
 			}
 			if( dch == null ) {
@@ -286,7 +289,7 @@ extends OSCTransmitter( 'udp, addr, dch == null ) {
 	def send( p: OSCPacket, target: SocketAddress ) {
 		try {
 			sync.synchronized {
-				if( dch == null ) throw new IOException( getResourceString( "errChannelNotConnected" ))
+				if( dch == null ) throw new IOException( "Channel not connected" )
 
 				checkBuffer
 				byteBuf.clear

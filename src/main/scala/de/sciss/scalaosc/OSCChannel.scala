@@ -54,6 +54,9 @@ object OSCChannel {
 
 import OSCChannel._
 
+/**
+ *    @version 0.11, 27-May-10
+ */
 trait OSCChannel {
     protected var dumpMode					= DUMP_OFF
     protected var printStream : PrintStream	= null
@@ -62,12 +65,12 @@ trait OSCChannel {
 	/**
 	 *	Queries the transport protocol used by this communicator.
 	 *	
-	 *	@return	the protocol, such as <code>UDP</code> or <code>TCP</code>
+	 *	@return	the transport, such as <code>UDP</code> or <code>TCP</code>
 	 *
 	 *	@see	#UDP
 	 *	@see	#TCP
 	 */
-	def protocol : Symbol
+	def transport : OSCTransport
 
 	/**
 	 *	Queries the communicator's local socket address.

@@ -119,10 +119,7 @@ import java.net.{ InetSocketAddress, SocketAddress }
  *	@see		OSCReceiver
  *	@see		OSCServer
  *
- *  @author		Hanns Holger Rutz
- *  @version	0.37, 19-Jan-10
- *
- *	@since		NetUtil 0.30
+ *  @version	0.37, 27-May-10
  */
 object OSCClient {
 	/**
@@ -136,9 +133,9 @@ object OSCClient {
 	 *	and to which messages are sent. The target socket can be set
 	 *	using the <code>setTarget</code> method!
 	 *
-	 *	@param	c			the codec to use
-	 *	@param	protocol	the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
-	 *	@param	port		the port number for the OSC socket, or <code>0</code> to use an arbitrary free port
+    *	@param	transport the protocol to use, currently either <code>UDP</code> or <code>TCP</code>
+    *	@param	port		the port number for the OSC socket, or <code>0</code> to use an arbitrary free port
+	 *	@param	codec		the codec to use
 	 *	@param	loopBack	if <code>true</code>, the &quot;loopback&quot; address (<code>&quot;127.0.0.1&quot;</code>)
 	 *						is used which limits communication to the local machine. If <code>false</code>, the
 	 *						special IP <code>"0.0.0.0"</code> is used which means messages from any IP as well as from
@@ -148,19 +145,18 @@ object OSCClient {
 	 *
 	 *	@throws	IOException					if a networking error occurs while creating the socket
 	 *	@throws	IllegalArgumentException	if an illegal protocol is used
-	 *
-	 *	@since		NetUtil 0.33
 	 */
-	@throws( classOf[ IOException ])
-	def apply( protocol: Symbol, port: Int = 0, loopBack: Boolean = false, c: OSCPacketCodec = OSCPacketCodec.default ) : OSCClient = {
-		val rcv		= OSCReceiver( protocol, port, loopBack, c )
-		val trns	= OSCTransmitter( protocol, port, loopBack, c )
+   @throws( classOf[ IOException ])
+   def apply( transport: OSCTransport, port: Int = 0, loopBack: Boolean = false,
+              codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCClient = {
+	   val rcv  = OSCReceiver( transport, port, loopBack, codec )
+   	val trns	= OSCTransmitter( transport, port, loopBack, codec )
 
-		new OSCClient( rcv, trns, protocol )
-	}
+	   new OSCClient( rcv, trns, transport )
+   }
 }
 
-class OSCClient( rcv: OSCReceiver, trns: OSCTransmitter, val protocol: Symbol )
+class OSCClient private( rcv: OSCReceiver, trns: OSCTransmitter, val transport: OSCTransport )
 extends OSCInputChannel with OSCOutputChannel
 {
 	import OSCChannel._
@@ -180,7 +176,7 @@ extends OSCInputChannel with OSCOutputChannel
 	 *	and <code>getPort()</code>.
 	 *	<p>
 	 *	Note that if the client is bound to the accept-any IP <code>"0.0.0.0"</code>,
-	 *	which happens for example when calling <code>newUsing( &lt;protocol&gt;, 0, false )</code>,
+	 *	which happens for example when calling <code>newUsing( &lt;transport&gt;, 0, false )</code>,
 	 *	the returned IP will be the localhost's IP, so you can
 	 *	patch the result directly into any <code>setTarget</code> call.
 	 *	
