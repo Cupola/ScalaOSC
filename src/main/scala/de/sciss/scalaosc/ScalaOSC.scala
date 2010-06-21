@@ -29,7 +29,7 @@ import java.util.{ MissingResourceException, ResourceBundle }
  */
 object ScalaOSC {
    val name                = "ScalaOSC"
-   val version             = 0.16
+   val version             = 0.17
    val copyright           = "(C)opyright 2008-2010 Hanns Holger Rutz"
 //   private val resBundle	= ResourceBundle.getBundle( "ScalaOSCStrings" )
 
