@@ -136,5 +136,14 @@ object Test {
               catch { case e: IOException => }
           }
       }
-  }
+   }
+
+   def tcpClient {
+      val c = OSCClient( TCP, loopBack = true )
+      c.target = new InetSocketAddress( "127.0.0.1", 57110 )
+      c.start
+      c.dumpOSC(1)
+      c ! OSCMessage( "/dumpOSC", 1 )
+      c ! OSCMessage( "/notify", 1 )
+   }
 }

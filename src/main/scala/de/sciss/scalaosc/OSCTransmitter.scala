@@ -149,7 +149,7 @@ extends OSCChannel {
 	private var bufSize						= DEFAULTBUFSIZE
 	protected var byteBuf : ByteBuffer	= null
  
-    var target: SocketAddress		      = null
+   var target: SocketAddress		      = null
 	
 	/**
 	 *	Establishes connection for transports requiring
@@ -187,9 +187,9 @@ extends OSCChannel {
 	 */
 	def isConnected : Boolean
 
-	def !( p: OSCPacket ) : Unit = send( p, target )
+	final def !( p: OSCPacket ) : Unit = send( p, target )
  
-	def bufferSize_=( size: Int ) {
+	final def bufferSize_=( size: Int ) {
 		sync.synchronized {
 			if( bufSize != size ) {
 				bufSize		= size
@@ -198,7 +198,7 @@ extends OSCChannel {
 		}
 	}
 	
-	def bufferSize : Int = {
+	final def bufferSize : Int = {
 		sync.synchronized {
 			bufSize
 		}
@@ -209,7 +209,7 @@ extends OSCChannel {
 	}
 
 	// @synchronization	caller must ensure synchronization
-	protected def checkBuffer {
+	protected final def checkBuffer {
 		if( allocBuf ) {
 			byteBuf		= ByteBuffer.allocateDirect( bufSize )
 			allocBuf	= false
@@ -217,9 +217,6 @@ extends OSCChannel {
 	}
 	
 	private[ scalaosc ] def channel : SelectableChannel
-
-   @throws( classOf[ IOException ])
-   protected def sendBuffer( target: SocketAddress ) : Unit
 
    /**
     *	Sends an OSC packet (bundle or message) to the given
@@ -232,34 +229,18 @@ extends OSCChannel {
     *						buffer overflow error or network error occurs
     */
 	@throws( classOf[ IOException ])
-	def send( p: OSCPacket, target: SocketAddress ) {
-		try {
-			sync.synchronized {
-            if( channel == null ) throw new IOException( "Channel not connected" );
-				checkBuffer
-				byteBuf.clear
-//				p.encode( byteBuf )
-//				codec.encode( p, byteBuf )
-				p.encode( codec, byteBuf )
-				byteBuf.flip
+	def send( p: OSCPacket, target: SocketAddress ) : Unit
 
-				if( (dumpMode != DUMP_OFF) && dumpFilter.apply( p )) {
-					printStream.synchronized {
-						printStream.print( "s: " )
-						if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
-						if( (dumpMode & DUMP_HEX)  != 0 ) {
-							OSCPacket.printHexOn( printStream, byteBuf )
-							byteBuf.flip
-						}
-					}
-				}
-
-            sendBuffer( target )
-			}
-		}
-	   catch { case e: BufferOverflowException =>
-	    	throw new OSCException( OSCException.BUFFER,
-	    		if( p.isInstanceOf[ OSCMessage ]) p.asInstanceOf[ OSCMessage ].name else p.getClass.getName )
-	   }
-  	}
+   protected final def dumpPacket( p: OSCPacket ) {
+      if( (dumpMode != DUMP_OFF) && dumpFilter.apply( p )) {
+         printStream.synchronized {
+            printStream.print( "s: " )
+            if( (dumpMode & DUMP_TEXT) != 0 ) OSCPacket.printTextOn( codec, printStream, p )
+            if( (dumpMode & DUMP_HEX)  != 0 ) {
+               OSCPacket.printHexOn( printStream, byteBuf )
+               byteBuf.flip
+            }
+         }
+      }
+   }
 }

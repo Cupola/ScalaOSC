@@ -100,7 +100,24 @@ extends OSCTransmitter( TCP, _addr, sch == null ) {
 //   }
 
    @throws( classOf[ IOException ])
-   protected def sendBuffer( target: SocketAddress ) {
-      sch.write( byteBuf )
+   def send( p: OSCPacket, target: SocketAddress ) {
+      try {
+         sync.synchronized {
+            if( sch == null ) throw new IOException( "Channel not connected" );
+            checkBuffer
+            byteBuf.clear
+            byteBuf.position( 4 )
+            p.encode( codec, byteBuf )
+            val len = byteBuf.position() - 4
+            byteBuf.flip()
+            byteBuf.putInt( 0, len )
+            dumpPacket( p )
+            sch.write( byteBuf )
+         }
+      }
+      catch { case e: BufferOverflowException =>
+          throw new OSCException( OSCException.BUFFER,
+             if( p.isInstanceOf[ OSCMessage ]) p.asInstanceOf[ OSCMessage ].name else p.getClass.getName )
+      }
    }
 }

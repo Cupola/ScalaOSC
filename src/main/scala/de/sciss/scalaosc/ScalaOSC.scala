@@ -35,24 +35,28 @@ object ScalaOSC {
 
    def versionString = (version + 0.001).toString.substring( 0, 4 )
 
-	def main( args: Array[ String ]) {
-		var testo = false
+   def main( args: Array[ String ]) {
+	   var testo = false
 	
 		if( args.length == 1 ) {
-		  args( 0 ) match {
-		    case "--testTransmitter" => {
-				testo	= true
-				Test.transmitter
-			}
-		    case "--testReceiver" => {
-		    	testo = true
-		    	Test.receiver
-		    }
-		    case "--runChecks" => {
-		    	testo = true
-		    	Test.codec
-		    }
-		  }
+		   args( 0 ) match {
+		      case "--testTransmitter" => {
+				   testo	= true
+				   Test.transmitter
+			   }
+		      case "--testReceiver" => {
+		    	   testo = true
+		    	   Test.receiver
+		      }
+		      case "--runChecks" => {
+		    	   testo = true
+		    	   Test.codec
+		      }
+            case "--testTCPClient" => {
+               testo = true
+               Test.tcpClient
+            }
+		   }
 		}
 
 		if( !testo ) {

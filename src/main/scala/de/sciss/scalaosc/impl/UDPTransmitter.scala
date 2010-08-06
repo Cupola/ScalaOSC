@@ -89,8 +89,22 @@ extends OSCTransmitter( UDP, _addr, dch == null ) {
 		}
 	}
 
-	@throws( classOf[ IOException ])
-	protected def sendBuffer( target: SocketAddress ) {
-   	dch.send( byteBuf, target )
-  	}
+   @throws( classOf[ IOException ])
+   def send( p: OSCPacket, target: SocketAddress ) {
+      try {
+         sync.synchronized {
+            if( dch == null ) throw new IOException( "Channel not connected" );
+            checkBuffer
+            byteBuf.clear
+            p.encode( codec, byteBuf )
+            byteBuf.flip
+            dumpPacket( p )
+            dch.send( byteBuf, target )
+         }
+      }
+      catch { case e: BufferOverflowException =>
+          throw new OSCException( OSCException.BUFFER,
+             if( p.isInstanceOf[ OSCMessage ]) p.asInstanceOf[ OSCMessage ].name else p.getClass.getName )
+      }
+   }
 }
