@@ -258,7 +258,7 @@ extends OSCInputChannel with OSCOutputChannel
 	 *	@see	#setTarget( SocketAddress )
 	 */
 	@throws( classOf[ IOException ])
-	def send( p: OSCPacket ): Unit = trns.send( p )
+	def !( p: OSCPacket ): Unit = trns.!( p )
 
 	/**
 	 *  Registers a listener that gets informed

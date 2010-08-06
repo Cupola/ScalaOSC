@@ -25,11 +25,11 @@ package de.sciss.scalaosc
 import java.util.{ MissingResourceException, ResourceBundle }
 
 /**
- *    @version 0.14, 27-May-10
+ *    @version 0.18, 06-Aug-10
  */
 object ScalaOSC {
    val name                = "ScalaOSC"
-   val version             = 0.17
+   val version             = 0.18
    val copyright           = "(C)opyright 2008-2010 Hanns Holger Rutz"
 //   private val resBundle	= ResourceBundle.getBundle( "ScalaOSCStrings" )
 

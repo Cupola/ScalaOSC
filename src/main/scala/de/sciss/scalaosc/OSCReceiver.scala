@@ -22,6 +22,7 @@
 
 package de.sciss.scalaosc
 
+import impl.{TCPReceiver, UDPReceiver}
 import java.io.{ IOException, PrintStream }
 import java.net.{ DatagramPacket, DatagramSocket, InetAddress, InetSocketAddress, Socket, SocketAddress,
                   UnknownHostException }
@@ -94,15 +95,10 @@ object OSCReceiver {
 	@throws( classOf[ IOException ])
 	def withAddress( transport: OSCTransport, localAddress: InetSocketAddress,
                     codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
-		if( transport == UDP ) {
-			new UDPOSCReceiver( localAddress, codec )
-			
-//		} else if( protocol == 'tcp ) {
-//			new TCPOSCReceiver( localAddress )
-			
-		} else {
-			throw new IllegalArgumentException( "Unsupported transport : " + transport.name )
-		}
+      transport match {
+         case UDP => new UDPReceiver( localAddress, codec )
+         case TCP => new TCPReceiver( localAddress, codec )
+      }
 	}
 
 	/**
@@ -122,29 +118,37 @@ object OSCReceiver {
 	 *	@throws	IOException	if a networking error occurs while configuring the socket
 	 */
 	@throws( classOf[ IOException ])
-	def withChannel( dch: DatagramChannel, codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCReceiver = {
-		new UDPOSCReceiver( dch, codec )
-	}
+	def withChannel( dch: DatagramChannel ) : OSCReceiver =
+		new UDPReceiver( dch, OSCPacketCodec.default )
 
-//	/**
-//	 *	Creates a new instance of a non-revivable <code>OSCReceiver</code>, using
-//	 *	default codec and TCP transport on a given channel. The caller should ensure that
-//	 *	the provided channel's socket was bound to a valid address
-//	 *	(using <code>sch.socket().bind( SocketAddress )</code>). Furthermore,
-//	 *	the channel must be connected (using <code>connect()</code>) before
-//	 *	being able to receive messages. Note that <code>sch</code> specifies the
-//	 *	local socket (at which the receiver listens), it does not determine the
-//	 *	remote sockets from which messages can be received. The remote (or target)
-//	 *	socket must be explicitly specified using <code>setTarget</code> before
-//	 *	trying to connect!
-//	 *
-//	 *	@param	sch			the <code>SocketChannel</code> to use as TCP socket.
-//	 *	@return				the newly created receiver
-//	 *
-//	 *	@throws	IOException	if a networking error occurs while configuring the socket
-//	 */
-//	@throws( classOf[ IOException ])
-//	def apply( sch: SocketChannel ) : OSCReceiver = new TCPOSCReceiver( sch )
+   @throws( classOf[ IOException ])
+   def withChannel( dch: DatagramChannel, codec: OSCPacketCodec ) : OSCReceiver =
+      new UDPReceiver( dch, codec )
+
+	/**
+	 *	Creates a new instance of a non-revivable <code>OSCReceiver</code>, using
+	 *	default codec and TCP transport on a given channel. The caller should ensure that
+	 *	the provided channel's socket was bound to a valid address
+	 *	(using <code>sch.socket().bind( SocketAddress )</code>). Furthermore,
+	 *	the channel must be connected (using <code>connect()</code>) before
+	 *	being able to receive messages. Note that <code>sch</code> specifies the
+	 *	local socket (at which the receiver listens), it does not determine the
+	 *	remote sockets from which messages can be received. The remote (or target)
+	 *	socket must be explicitly specified using <code>setTarget</code> before
+	 *	trying to connect!
+	 *
+	 *	@param	sch			the <code>SocketChannel</code> to use as TCP socket.
+	 *	@return				the newly created receiver
+	 *
+	 *	@throws	IOException	if a networking error occurs while configuring the socket
+	 */
+	@throws( classOf[ IOException ])
+	def withChannel( sch: SocketChannel, codec: OSCPacketCodec ) : OSCReceiver =
+      new TCPReceiver( sch, codec )
+
+   @throws( classOf[ IOException ])
+   def withChannel( sch: SocketChannel ) : OSCReceiver =
+      new TCPReceiver( sch, OSCPacketCodec.default )
 
 	protected def debugTimeString : String = {
 		new java.text.SimpleDateFormat( "HH:mm:ss.SSS" ).format( new java.util.Date )
@@ -488,132 +492,4 @@ extends OSCChannel with Runnable {
 	 *	@see	#connect()
 	 */
 	def isConnected : Boolean
-}
-
-private class UDPOSCReceiver( _addr: InetSocketAddress, private var dch: DatagramChannel, _codec: OSCPacketCodec )
-extends OSCReceiver( UDP, _addr, dch == null, _codec ) {
-	def this( localAddress: InetSocketAddress, codec: OSCPacketCodec ) = this( localAddress, null, codec )
-	def this( dch: DatagramChannel, codec: OSCPacketCodec ) {
-		this( new InetSocketAddress( dch.socket.getLocalAddress, dch.socket.getLocalPort ), dch, codec )
-	}
-			
-//	def codec : OSCPacketCodec = c
-//	def codec_=( cdc: OSCPacketCodec ) {
-//		c = cdc
-//	}
-	
-	@throws( classOf[ IOException ])
-	private[ scalaosc ] def channel_=( ch: SelectableChannel ) {
-		generalSync.synchronized {
-			if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
-		
-			val dchTmp	= ch.asInstanceOf[ DatagramChannel ]
-			if( !dchTmp.isBlocking ) {
-				dchTmp.configureBlocking( true )
-			}
-			if( dchTmp.isConnected ) throw new IllegalStateException( "Channel is not connected" )
-			dch = dchTmp
-		}
-	}
-	private[ scalaosc ] def channel : SelectableChannel = dch
-		
-	def localAddress : InetSocketAddress = {
-		generalSync.synchronized {
-			if( dch != null ) {
-				val ds = dch.socket
-				getLocalAddress( ds.getLocalAddress, ds.getLocalPort )
-			} else {
-				getLocalAddress( addr.getAddress, addr.getPort )
-			}
-		}
-	}
-
-	def target_=( t: SocketAddress ) {
-		tgt = t
-	}
-		
-	@throws( classOf[ IOException ])
-	def connect {
-		generalSync.synchronized {
-			if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
-
-			if( (dch != null) && !dch.isOpen ) {
-				if( !revivable ) throw new IOException( "Channel cannot be revived" )
-				dch = null
-			}
-			if( dch == null ) {
-				val newCh = DatagramChannel.open
-				newCh.socket.bind( localAddress )
-				channel = newCh
-			}
-		}
-	}
-
-	def isConnected : Boolean = {
-		generalSync.synchronized {
-			(dch != null) && dch.isOpen
-		}
-	}
-
-	@throws( classOf[ IOException ])
-	protected def closeChannel {
-		if( dch != null ) {
-			try {
-				dch.close
-			}
-			finally {
-				dch = null
-			}
-		}
-	}
-
-	/**
-	 *	This is the body of the listening thread
-	 */
-	def run {
-		checkBuffer
-
-		try {
-			while( listening ) {
-				try {
-					byteBuf.clear
-//println( "in run : " + dch )
-					val sender = dch.receive( byteBuf )
-
-					if( listening && (sender != null) &&
-						((tgt == null) || tgt.equals( sender ))) {
-						
-						flipDecodeDispatch( sender )
-					}
-				}
-				catch {
-					case e1: ClosedChannelException => {	// bye bye, we have to quit
-						if( listening ) {
-							System.err.println( "OSCReceiver.run : " + e1.getClass.getName + " : " + e1.getLocalizedMessage )
-						}
-						return
-					  }
-					  case e2: IOException =>
-						if( listening ) {
-							System.err.println( "OSCReceiver.run : " + e2.getClass.getName + " : " + e2.getLocalizedMessage )
-						}
-				}
-			} // while( listening )
-		}
-		finally {
-			threadSync.synchronized {
-				thread = null
-				threadSync.notifyAll   // stopListening() might be waiting
-			}
-		}
-	}
-		
-	@throws( classOf[ IOException ])
-	protected def sendGuardSignal {
-		val guard		= new DatagramSocket
-		val guardPacket	= new DatagramPacket( new Array[ Byte ]( 0 ), 0 )
-		guardPacket.setSocketAddress( localAddress )
-		guard.send( guardPacket )
-		guard.close
-	}
 }

@@ -109,9 +109,9 @@ object Test {
           trns.target = addr
           trns.dumpOSC( OSCChannel.DUMP_TEXT, System.out )
 
-          trns.send( OSCMessage( "/s_new", "default", 1000, 0, 0, "amp", 0f ))
+          trns ! OSCMessage( "/s_new", "default", 1000, 0, 0, "amp", 0f )
           for( i <- (1 to 8) ) {
-        	  trns.send( OSCMessage( "/n_set", 1000, "freq", i * 333, "amp", 0.5f ))
+        	  trns ! OSCMessage( "/n_set", 1000, "freq", i * 333, "amp", 0.5f )
         	  Thread.sleep( 200 )
           }
           

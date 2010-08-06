@@ -22,16 +22,17 @@
 
 package de.sciss.scalaosc
 
+import impl.{TCPTransmitter, UDPTransmitter}
 import java.io.IOException
 import java.net.{ InetAddress, InetSocketAddress, SocketAddress }
 import java.nio.{ BufferOverflowException, ByteBuffer }
-import java.nio.channels.{ DatagramChannel, SelectableChannel }
 import OSCChannel._
 import ScalaOSC._
+import java.nio.channels.{SocketChannel, DatagramChannel, SelectableChannel}
 
 /**
- * 	@author		Hanns Holger Rutz
- * 	@version	0.11, 23-Nov-09
+ * 	@author	Hanns Holger Rutz
+ * 	@version 0.11, 23-Nov-09
  */
 object OSCTransmitter {
 	/**
@@ -83,14 +84,9 @@ object OSCTransmitter {
 	@throws( classOf[ IOException ])
 	def withAddress( transport: OSCTransport, localAddress: InetSocketAddress,
                     codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCTransmitter = {
-		if( transport == UDP ) {
-			new UDPOSCTransmitter( localAddress, codec )
-			
-//		} else if( protocol == 'tcp ) {
-//			new TCPOSCTransmitter( localAddress )
-			
-		} else {
-			throw new IllegalArgumentException( "Unsupported transport : " + transport.name )
+      transport match {
+         case UDP => new UDPTransmitter( localAddress, codec )
+         case TCP => new TCPTransmitter( localAddress, codec )
 		}
 	}
 
@@ -109,33 +105,43 @@ object OSCTransmitter {
 	 *	@throws	IOException	if a networking error occurs while configuring the socket
 	 */
 	@throws( classOf[ IOException ])
-	def withChannel( dch: DatagramChannel, codec: OSCPacketCodec = OSCPacketCodec.default ) : OSCTransmitter = {
-		new UDPOSCTransmitter( dch, codec )
+	def withChannel( dch: DatagramChannel, codec: OSCPacketCodec ) : OSCTransmitter = {
+		new UDPTransmitter( dch, codec )
 	}
 
-//	/**
-//	 *	Creates a new instance of an <code>OSCTransmitter</code>, using
-//	 *	default codec and TCP transport on a given channel. The caller should ensure that
-//	 *	the provided channel's socket was bound to a valid address
-//	 *	(using <code>sch.socket().bind( SocketAddress )</code>). Furthermore,
-//	 *	the channel must be connected (using <code>connect()</code>) before
-//	 *	being able to transmit messages.
-//	 *	Note that <code>sch</code> specifies the
-//	 *	local socket, not the remote (or target) socket. This can be set
-//	 *	using the <code>setTarget</code> method!
-//	 *
-//	 *	@param	sch			the <code>SocketChannel</code> to use as TCP socket.
-//	 *	@return				the newly created transmitter
-//	 *
-//	 *	@throws	IOException	if a networking error occurs while configuring the socket
-//	 */
-//	@throws( classOf[ IOException ])
-//	def apply( sch: SocketChannel ) : OSCTransmitter = {
-//		new TCPOSCTransmitter( sch )
-//	}
+   @throws( classOf[ IOException ])
+   def withChannel( dch: DatagramChannel ) : OSCTransmitter = {
+      new UDPTransmitter( dch, OSCPacketCodec.default )
+   }
+
+	/**
+	 *	Creates a new instance of an <code>OSCTransmitter</code>, using
+	 *	default codec and TCP transport on a given channel. The caller should ensure that
+	 *	the provided channel's socket was bound to a valid address
+	 *	(using <code>sch.socket().bind( SocketAddress )</code>). Furthermore,
+	 *	the channel must be connected (using <code>connect()</code>) before
+	 *	being able to transmit messages.
+	 *	Note that <code>sch</code> specifies the
+	 *	local socket, not the remote (or target) socket. This can be set
+	 *	using the <code>setTarget</code> method!
+	 *
+	 *	@param	sch			the <code>SocketChannel</code> to use as TCP socket.
+	 *	@return				the newly created transmitter
+	 *
+	 *	@throws	IOException	if a networking error occurs while configuring the socket
+	 */
+	@throws( classOf[ IOException ])
+	def withChannel( sch: SocketChannel, codec: OSCPacketCodec ) : OSCTransmitter = {
+		new TCPTransmitter( sch, codec )
+	}
+
+   @throws( classOf[ IOException ])
+   def withChannel( sch: SocketChannel ) : OSCTransmitter = {
+      new TCPTransmitter( sch, OSCPacketCodec.default )
+   }
 }
 
-abstract class OSCTransmitter( val transport: OSCTransport, protected val localAddr: InetSocketAddress,
+abstract class OSCTransmitter( val transport: OSCTransport, protected val addr: InetSocketAddress,
                                protected val revivable: Boolean )
 extends OSCChannel {
 	protected val sync						= new AnyRef
@@ -181,19 +187,6 @@ extends OSCChannel {
 	 */
 	def isConnected : Boolean
 
-	/**
-	 *	Sends an OSC packet (bundle or message) to the given
-	 *	network address, using the current codec.
-	 *
-	 *	@param	p		the packet to send
-	 *	@param	target	the target address to send the packet to
-	 *
-	 *	@throws	IOException	if a write error, OSC encoding error,
-	 *						buffer overflow error or network error occurs
-	 */
-	@throws( classOf[ IOException ])
-	def send( p: OSCPacket, target: SocketAddress = target ) : Unit
-
 	def !( p: OSCPacket ) : Unit = send( p, target )
  
 	def bufferSize_=( size: Int ) {
@@ -224,73 +217,25 @@ extends OSCChannel {
 	}
 	
 	private[ scalaosc ] def channel : SelectableChannel
- }
 
-private class UDPOSCTransmitter( addr: InetSocketAddress, private var dch: DatagramChannel, var codec: OSCPacketCodec )
-extends OSCTransmitter( UDP, addr, dch == null ) {
-//  private var dch: DatagramChannel = null
-  
-	def this( localAddress: InetSocketAddress, codec: OSCPacketCodec ) = this( localAddress, null, codec )
-	def this( dch: DatagramChannel, codec: OSCPacketCodec ) {
-		this( new InetSocketAddress( dch.socket.getLocalAddress, dch.socket.getLocalPort ), dch, codec )
-  	}
-  
- 	private[ scalaosc ] def channel : SelectableChannel = {
-		sync.synchronized {
-			dch
-		}
-	}
-	
-	def localAddress : InetSocketAddress = {
-		sync.synchronized {
-			if( dch != null ) {
-				val ds = dch.socket
-				new InetSocketAddress( ds.getLocalAddress, ds.getLocalPort )
-			} else {
-//				localAddress
-				addr
-			}
-		}
-	}
+   @throws( classOf[ IOException ])
+   protected def sendBuffer( target: SocketAddress ) : Unit
 
-	@throws( classOf[ IOException ])
-	def connect {
-		sync.synchronized {
-			if( (dch != null) && !dch.isOpen ) {
-				if( !revivable ) throw new IOException( "Channel cannot be revived" )
-				dch = null
-			}
-			if( dch == null ) {
-				val newCh = DatagramChannel.open
-				newCh.socket.bind( localAddress )
-				dch = newCh
-			}
-		}
-	}
-
-	def isConnected : Boolean = {
-		sync.synchronized {
-			(dch != null) && dch.isOpen
-		}
-	}
-
-	override def dispose {
-		super.dispose
-		if( dch != null ) {
-			try {
-				dch.close
-			}
-			catch { case e: IOException => /* ignored */ }
-			dch = null
-		}
-	}
-  
+   /**
+    *	Sends an OSC packet (bundle or message) to the given
+    *	network address, using the current codec.
+    *
+    *	@param	p		the packet to send
+    *	@param	target	the target address to send the packet to
+    *
+    *	@throws	IOException	if a write error, OSC encoding error,
+    *						buffer overflow error or network error occurs
+    */
 	@throws( classOf[ IOException ])
 	def send( p: OSCPacket, target: SocketAddress ) {
 		try {
 			sync.synchronized {
-				if( dch == null ) throw new IOException( "Channel not connected" )
-
+            if( channel == null ) throw new IOException( "Channel not connected" );
 				checkBuffer
 				byteBuf.clear
 //				p.encode( byteBuf )
@@ -308,13 +253,13 @@ extends OSCTransmitter( UDP, addr, dch == null ) {
 						}
 					}
 				}
-					
-				dch.send( byteBuf, target )
+
+            sendBuffer( target )
 			}
 		}
-	    catch { case e: BufferOverflowException =>
+	   catch { case e: BufferOverflowException =>
 	    	throw new OSCException( OSCException.BUFFER,
 	    		if( p.isInstanceOf[ OSCMessage ]) p.asInstanceOf[ OSCMessage ].name else p.getClass.getName )
-	    }
+	   }
   	}
 }

@@ -1,0 +1,96 @@
+/*
+ *  UDPTransmitter.scala
+ *  (ScalaOSC)
+ *
+ *  Copyright (c) 2008-2010 Hanns Holger Rutz. All rights reserved.
+ *
+ *	 This library is free software; you can redistribute it and/or
+ *	 modify it under the terms of the GNU Lesser General Public
+ *	 License as published by the Free Software Foundation; either
+ *	 version 2.1 of the License, or (at your option) any later version.
+ *
+ *	 This library is distributed in the hope that it will be useful,
+ *	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *	 Lesser General Public License for more details.
+ *
+ *	 Below is a copy of the GNU Lesser General Public License
+ *
+ *	 For further information, please contact Hanns Holger Rutz at
+ *	 contact@sciss.de
+ */
+
+package de.sciss.scalaosc.impl
+
+import java.nio.BufferOverflowException
+import de.sciss.scalaosc._
+import java.net.{SocketAddress, InetSocketAddress}
+import java.io.IOException
+import java.nio.channels.{SelectableChannel, DatagramChannel}
+
+final class UDPTransmitter( _addr: InetSocketAddress, private var dch: DatagramChannel, var codec: OSCPacketCodec )
+extends OSCTransmitter( UDP, _addr, dch == null ) {
+   import OSCChannel._
+   
+//  private var dch: DatagramChannel = null
+
+	def this( localAddress: InetSocketAddress, codec: OSCPacketCodec ) = this( localAddress, null, codec )
+	def this( dch: DatagramChannel, codec: OSCPacketCodec ) {
+		this( new InetSocketAddress( dch.socket.getLocalAddress(), dch.socket.getLocalPort() ), dch, codec )
+  	}
+
+ 	private[ scalaosc ] def channel : SelectableChannel = {
+		sync.synchronized {
+			dch
+		}
+	}
+
+	def localAddress : InetSocketAddress = {
+		sync.synchronized {
+			if( dch != null ) {
+				val ds = dch.socket
+				new InetSocketAddress( ds.getLocalAddress, ds.getLocalPort )
+			} else {
+//				localAddress
+				addr
+			}
+		}
+	}
+
+	@throws( classOf[ IOException ])
+	def connect {
+		sync.synchronized {
+			if( (dch != null) && !dch.isOpen ) {
+				if( !revivable ) throw new IOException( "Channel cannot be revived" )
+				dch = null
+			}
+			if( dch == null ) {
+				val newCh = DatagramChannel.open
+				newCh.socket.bind( addr )
+				dch = newCh
+			}
+		}
+	}
+
+	def isConnected : Boolean = {
+		sync.synchronized {
+			(dch != null) && dch.isOpen()
+		}
+	}
+
+	override def dispose {
+		super.dispose
+		if( dch != null ) {
+			try {
+				dch.close
+			}
+			catch { case e: IOException => /* ignored */ }
+			dch = null
+		}
+	}
+
+	@throws( classOf[ IOException ])
+	protected def sendBuffer( target: SocketAddress ) {
+   	dch.send( byteBuf, target )
+  	}
+}
