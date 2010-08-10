@@ -24,7 +24,10 @@ package de.sciss.osc
 
 import java.io.{ IOException, PrintStream }
 import java.nio.{ BufferOverflowException, BufferUnderflowException, ByteBuffer }
-
+import collection.LinearSeqLike
+import collection.mutable.Builder
+import java.text.{NumberFormat, SimpleDateFormat, DecimalFormat}
+import java.util.Locale
 object OSCPacket {
 	private val HEX				= "0123456789ABCDEF".getBytes
   	private val PAD				= new Array[ Byte ]( 4 )
@@ -284,7 +287,7 @@ object OSCPacket {
 //	}
 }
 
-trait OSCPacket {
+sealed trait OSCPacket {
 	def name: String
 	
 	@throws( classOf[ OSCException ])
@@ -292,4 +295,234 @@ trait OSCPacket {
 	
 	def getEncodedSize( c: OSCPacketCodec ) : Int
 	private[osc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int )
+}
+
+// they need to be in the same file due to the sealed restriction...
+
+object OSCBundle {
+  /**
+   *  This is the initial string
+   *  of an OSC bundle datagram
+   */
+  private[osc] val TAG   = "#bundle"
+  private[osc] val TAGB  = "#bundle\0".getBytes
+
+  /**
+   *  The special timetag value
+   *  to indicate that the bundle be
+   *  processed as soon as possible
+   */
+  val NOW   = 1
+
+  private val SECONDS_FROM_1900_TO_1970 = 2208988800L
+
+   /**
+    * Creates a bundle with timetag given by
+    * a system clock value in milliseconds since
+    * jan 1 1970, as returned by System.currentTimeMillis
+    */
+   def millis( abs: Long, packets: OSCPacket* ) : OSCBundle =
+	   new OSCBundle( millisToTimetag( abs ), packets: _* )
+
+   /**
+    * Creates a bundle with timetag given by
+    * a relative value in seconds, as required
+    * for example for scsynth offline rendering
+    */
+   def secs( delta: Double, packets: OSCPacket* ) : OSCBundle =
+	   new OSCBundle( secsToTimetag( delta ), packets: _* )
+
+   /**
+    * Creates a bundle with special timetag 'now'
+    */
+   def apply( packets: OSCPacket* ) : OSCBundle = new OSCBundle( NOW, packets: _* )
+
+//   /**
+//    * Creates a bundle with raw formatted timetag
+//    */
+//   def apply( timetag: Long, packets: OSCPacket* ) : OSCBundle = new OSCBundle( timetag, packets: _* )
+
+   /**
+    * Converts a time value from the system clock value in milliseconds since
+    * jan 1 1970, as returned by System.currentTimeMillis, into a raw timetag.
+    */
+   def millisToTimetag( abs: Long ) : Long = {
+      val secsSince1900    = abs / 1000 + SECONDS_FROM_1900_TO_1970
+      val secsFractional	= (((abs % 1000) << 32) + 500) / 1000
+      (secsSince1900 << 32) | secsFractional
+   }
+
+   /**
+    * Converts a relative time value in seconds, as required
+    * for example for scsynth offline rendering, into a raw timetag.
+    */
+   def secsToTimetag( delta: Double ) : Long =
+      (delta.toLong << 32) + ((delta % 1.0) * 0x100000000L + 0.5).toLong
+
+   /**
+    * Converts a raw timetag into a time value from the system clock value in milliseconds since
+    * jan 1 1970, corresponding to what is returned by System.currentTimeMillis.
+    */
+   def timetagToMillis( timetag: Long ) : Long = {
+      val m1 = ((timetag & 0xFFFFFFFFL) * 1000) >> 32
+      val m2 = (((timetag >> 32) & 0xFFFFFFFFL) - SECONDS_FROM_1900_TO_1970) * 1000
+      m1 + m2
+   }
+
+   /**
+    * Converts a raw timetag into a relative time value in seconds, as required
+    * for example for scsynth offline rendering. In general, this will return
+    * the amount of seconds since midnight on January 1, 1900, as defined by
+    * the OSC standard.
+    */
+   def timetagToSecs( timetag: Long ) : Double = {
+      val frac = (timetag & 0xFFFFFFFFL).toDouble / 0x100000000L
+      val secs = (timetag >> 32).toDouble
+      secs + frac
+   }
+
+//   def unapplySeq( b: OSCBundle ): Option[ Tuple2[ Long, Seq[ OSCPacket ]]]= Some( b.timetag -> b.packets )
+
+	@throws( classOf[ IOException ])
+	private[osc] def decode( b: ByteBuffer ) : OSCBundle = {
+		val totalLimit = b.limit
+		val p			   = new scala.collection.mutable.ListBuffer[ OSCPacket ]
+		val timetag 	= b.getLong
+
+		try {
+			while( b.hasRemaining ) {
+				b.limit( b.getInt + b.position )   // msg size
+				p += decode( b )
+				b.limit( totalLimit )
+			}
+			OSCBundle( timetag, p: _* )
+		}
+		catch { case e : IllegalArgumentException =>	// throws by b.limit if bundle size is corrupted
+			throw new OSCException( OSCException.DECODE, e.getLocalizedMessage )
+		}
+	}
+
+   private val datef    = new SimpleDateFormat( "HH:mm:ss.SSS", Locale.US )
+   private val decimf   = {
+      val res = NumberFormat.getInstance( Locale.US )
+      res match {
+         case d: DecimalFormat => {
+            d.setGroupingUsed( false )
+            d.setMinimumFractionDigits( 1 )
+            d.setMaximumFractionDigits( 5 )
+         }
+         case _ =>
+      }
+      res
+   }
+
+   private def smartTimetagString( timetag: Long ) : String = {
+      if( timetag == NOW ) "<now>" else {
+         val secsSince1900 = (timetag >> 32) & 0xFFFFFFFFL
+         if( secsSince1900 > SECONDS_FROM_1900_TO_1970 ) {
+            datef.format( timetagToMillis( timetag ))
+         } else {
+            decimf.format( timetagToSecs( timetag ))
+         }
+      }
+   }
+}
+
+final case class OSCBundle( timetag: Long, packets: OSCPacket* )
+extends OSCPacket
+with LinearSeqLike[ OSCPacket, OSCBundle ] {
+   import OSCBundle._
+
+	// ---- getting LinearSeqLike to work properly ----
+
+	def newBuilder : Builder[ OSCPacket, OSCBundle ] = {
+		new scala.collection.mutable.ArrayBuffer[ OSCPacket ] mapResult (buf => new OSCBundle( timetag, packets: _* ))
+	}
+
+	override def iterator : Iterator[ OSCPacket ] = packets.iterator
+	override def drop( n: Int ) : OSCBundle = new OSCBundle( timetag, packets.drop( n ): _* )
+   def apply( idx: Int ) = packets( idx )
+   def length: Int = packets.length
+
+	// ---- OSCPacket implementation ----
+	def name: String = OSCBundle.TAG
+
+	@throws( classOf[ OSCException ])
+	def encode( c: OSCPacketCodec, b: ByteBuffer ) : Unit = c.encodeBundle( this, b )
+
+	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedBundleSize( this )
+
+	private[osc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
+		stream.print( "  " * nestCount )
+		stream.print( "[ #bundle, " + smartTimetagString( timetag ))
+		val ncInc = nestCount + 1
+		for( v <- packets ) {
+			stream.println( ',' )
+			v.printTextOn( c, stream, ncInc )
+		}
+		if( nestCount == 0 ) stream.println( " ]" ) else stream.print( " ]" )
+	}
+
+   override def toString = "OSCBundle(" + smartTimetagString( timetag ) + packets.mkString( ", ", ", ", ")" )
+//   override def hashCode = timetag.hashCode * 41 + packets.hashCode
+//   override def equals( other: Any ) = other match {
+//      case that: OSCBundle => (that isComparable this) && this.timetag == that.timetag && this.packets == that.packets
+//      case _ => false
+//   }
+//   protected def isComparable( other: Any ) = other.isInstanceOf[ OSCBundle ]
+}
+
+// ------------------------------
+
+object OSCMessage {
+   def apply( name: String, args: Any* ) = new OSCMessage( name, args: _* )
+//   def unapply( m: OSCMessage ): Option[ OSCMessage ] = Some( m )
+   def unapplySeq( m: OSCMessage ): Option[ Tuple2[ String, Seq[ Any ]]]= Some( m.name -> m.args )
+}
+
+class OSCMessage( val name: String, val args: Any* )
+extends OSCPacket
+with LinearSeqLike[ Any, OSCMessage ]
+{
+   import OSCPacket._
+   
+	// ---- getting LinearSeqLike to work properly ----
+
+	def newBuilder : Builder[ Any, OSCMessage ] = {
+		new scala.collection.mutable.ArrayBuffer[ Any ] mapResult (buf => new OSCMessage( name, buf: _* ))
+	}
+
+	override def iterator : Iterator[ Any ] = args.iterator
+	override def drop( n: Int ) : OSCMessage = new OSCMessage( name, args.drop( n ): _* )
+   def apply( idx: Int ) = args( idx )
+   def length: Int = args.length
+
+	def encode( c: OSCPacketCodec, b: ByteBuffer ) : Unit = c.encodeMessage( this, b )
+	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedMessageSize( this )
+
+   // recreate stuff we lost when removing case modifier
+   override def toString = args.mkString( "OSCMessage(" + name + ", ", ", ", ")" )
+   override def hashCode = name.hashCode * 41 + args.hashCode
+   override def equals( other: Any ) = other match {
+      case that: OSCMessage => (that isComparable this) && this.name == that.name && this.args == that.args
+      case _ => false
+   }
+   protected def isComparable( other: Any ) = other.isInstanceOf[ OSCMessage ]
+
+	// ---- OSCPacket implementation ----
+
+	private[osc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
+		stream.print( "  " * nestCount )
+		stream.print( "[ " )
+		printEscapedStringOn( stream, name )
+		for( v <- args ) {
+			stream.print( ", " )
+			// XXX eventually encoder and decoder should be strictly separated,
+			// and hence we would integrate the printing of the incoming messages
+			// directly into the decoder!
+//			c.atomEncoders( v.asInstanceOf[ AnyRef ].getClass ).printTextOn( c, stream, nestCount, v )
+			c.atomEncoders( v ).printTextOn( c, stream, nestCount, v )
+		}
+		if( nestCount == 0 ) stream.println( " ]" ) else stream.print( " ]" )
+	}
 }

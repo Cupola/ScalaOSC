@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCBundle.scala" line="136" mnemonic="2" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="68747673-70a5-43b0-bd46-9d75ec5ca024" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/ScalaOSC.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/ScalaOSC.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCChannel.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCChannel.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCException.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCException.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/Test.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/Test.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/impl/TCPReceiver.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/impl/TCPReceiver.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCPacketCodec.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacketCodec.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCReceiver.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCReceiver.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/impl/TCPTransmitter.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/impl/TCPTransmitter.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/build.properties" afterPath="$PROJECT_DIR$/project/build.properties" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCTransmitter.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCTransmitter.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacket.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacket.scala" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCBundle.scala" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCMessage.scala" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/impl/UDPReceiver.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/impl/UDPReceiver.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/Atom.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/Atom.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCBundle.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCBundle.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCClient.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCClient.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCTransport.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCTransport.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/ScalaOSCStrings.properties" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCPacket.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacket.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/impl/UDPTransmitter.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/impl/UDPTransmitter.scala" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCMessage.scala" afterPath="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCMessage.scala" />
     </list>
     <ignored path=".idea/workspace.xml" />
     <ignored path="ScalaOSC.iws" />
@@ -105,10 +92,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.properties" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="OSCPacket.scala" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacket.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="323" column="1" selection-start="9791" selection-end="9791" vertical-scroll-proportion="0.19864865">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.properties" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project/build.properties">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="20" selection-start="140" selection-end="140" vertical-scroll-proportion="0.09933775">
+            <state line="8" column="0" selection-start="193" selection-end="193" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -128,8 +124,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCChannel.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCTransport.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCException.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCReceiver.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/impl/TCPReceiver.scala" />
@@ -141,9 +135,11 @@
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/impl/TCPTransmitter.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/Test.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/scalaosc/OSCBundle.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCBundle.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/de/sciss/osc/ScalaOSC.scala" />
         <option value="$PROJECT_DIR$/project/build.properties" />
+        <option value="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCBundle.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCMessage.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacket.scala" />
       </list>
     </option>
   </component>
@@ -182,8 +178,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -256,42 +250,14 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSCBundle.scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ScalaOSC" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ScalaOSC" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="project" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="Favorites" />
     </panes>
   </component>
@@ -505,20 +471,20 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32908162" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20790817" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3265306" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32962137" sideWeight="0.33545917" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32962137" sideWeight="0.6619898" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32962137" sideWeight="0.65561223" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3265306" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -588,51 +554,34 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCBundle.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="33" selection-start="793" selection-end="793" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/Test.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCClient.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCTransmitter.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/impl/UDPTransmitter.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="18" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="20" column="18" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/impl/TCPTransmitter.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="42" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="20" column="42" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCMessage.scala">
+    <entry file="file://$PROJECT_DIR$/project/build.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="8" column="0" selection-start="193" selection-end="193" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -644,9 +593,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project/build.properties">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/de/sciss/osc/OSCPacket.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="20" selection-start="140" selection-end="140" vertical-scroll-proportion="0.09933775">
+        <state line="323" column="1" selection-start="9791" selection-end="9791" vertical-scroll-proportion="0.19864865">
           <folding />
         </state>
       </provider>
