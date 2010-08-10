@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.IOException
 import ScalaOSC._

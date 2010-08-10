@@ -20,11 +20,11 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc.impl
+package de.sciss.osc.impl
 
 import java.io.IOException
 import java.net.{SocketAddress, InetSocketAddress}
-import de.sciss.scalaosc.{OSCException, TCP, OSCReceiver, OSCPacketCodec}
+import de.sciss.osc.{OSCException, TCP, OSCReceiver, OSCPacketCodec}
 import java.nio.channels.{ClosedChannelException, AlreadyConnectedException, SelectableChannel, SocketChannel}
 
 class TCPReceiver private( _localAddress: InetSocketAddress, private var sch: SocketChannel, _c: OSCPacketCodec )
@@ -36,7 +36,7 @@ extends OSCReceiver( TCP, _localAddress, sch == null, _c ) {
       this( new InetSocketAddress( sch.socket().getLocalAddress(), sch.socket().getLocalPort() ), sch, c )
 
    @throws( classOf[ IOException ])
-   private[ scalaosc ] def channel_=( ch: SelectableChannel ) {
+   private[ osc ] def channel_=( ch: SelectableChannel ) {
       generalSync.synchronized {
          if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
 
@@ -46,7 +46,7 @@ extends OSCReceiver( TCP, _localAddress, sch == null, _c ) {
          }
       }
    }
-   private[ scalaosc ] def channel : SelectableChannel = sch
+   private[ osc ] def channel : SelectableChannel = sch
 
    def localAddress : InetSocketAddress = {
       generalSync.synchronized {

@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.PrintStream
 import collection.LinearSeqLike
@@ -67,7 +67,7 @@ with LinearSeqLike[ Any, OSCMessage ]
 
 	// ---- OSCPacket implementation ----
 
-	private[scalaosc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
+	private[osc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
 		stream.print( "  " * nestCount )
 		stream.print( "[ " )
 		printEscapedStringOn( stream, name )

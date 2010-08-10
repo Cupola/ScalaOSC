@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import impl.{TCPTransmitter, UDPTransmitter}
 import java.io.IOException
@@ -216,7 +216,7 @@ extends OSCChannel {
 		}
 	}
 	
-	private[ scalaosc ] def channel : SelectableChannel
+	private[ osc ] def channel : SelectableChannel
 
    /**
     *	Sends an OSC packet (bundle or message) to the given

@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.{ IOException, PrintStream }
 import java.net.{ InetSocketAddress, SocketAddress }
@@ -49,7 +49,7 @@ object OSCChannel {
 	 */
 	val DEFAULTBUFSIZE = 8192
 	
-	private[scalaosc] def NO_FILTER( p: OSCPacket ) = true
+	private[osc] def NO_FILTER( p: OSCPacket ) = true
 }
 
 import OSCChannel._

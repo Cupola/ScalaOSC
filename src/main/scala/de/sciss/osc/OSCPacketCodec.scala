@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.IOException
 import java.nio.{ BufferOverflowException, BufferUnderflowException, ByteBuffer }
@@ -140,9 +140,9 @@ class OSCPacketCodec( mode: Int = OSCPacketCodec.MODE_FAT_V1, var charsetName: S
 	import OSCPacketCodec._
 	
 //	private[scalaosc] var atomEncoders	= Map.empty[ Class[_], Atom ]
-	private[scalaosc] var atomDecoders	= IntMap.empty[ Atom ]
+	private[osc] var atomDecoders	= IntMap.empty[ Atom ]
 	
-	private[scalaosc] val atomEncoders: Function1[ Any, Atom ] = {
+	private[osc] val atomEncoders: Function1[ Any, Atom ] = {
 		case x: Int => IntAtom
 		case x: Float => FloatAtom
 		case x: String => StringAtom
@@ -217,7 +217,7 @@ class OSCPacketCodec( mode: Int = OSCPacketCodec.MODE_FAT_V1, var charsetName: S
 //	def encode( p: OSCPacket, b: ByteBuffer ) : Unit = p.encode( this, b )
 
 	@throws( classOf[ IOException ])
-	private[ scalaosc ] def encodeBundle( bndl: OSCBundle, b: ByteBuffer ) {
+	private[ osc ] def encodeBundle( bndl: OSCBundle, b: ByteBuffer ) {
 		b.put( OSCBundle.TAGB ).putLong( bndl.timetag )
 //		bndl.synchronized {
 			bndl.foreach( p => {
@@ -249,7 +249,7 @@ class OSCPacketCodec( mode: Int = OSCPacketCodec.MODE_FAT_V1, var charsetName: S
 	 *								(buffer overflow, illegal arguments).
 	 */
 	@throws( classOf[ IOException ])
-	private[ scalaosc ] def encodeMessage( msg: OSCMessage, b: ByteBuffer ) : Unit = {
+	private[ osc ] def encodeMessage( msg: OSCMessage, b: ByteBuffer ) : Unit = {
 		val numArgs = msg.length
 
 		b.put( msg.name.getBytes() )  // this one assumes 7-bit ascii only
@@ -281,7 +281,7 @@ class OSCPacketCodec( mode: Int = OSCPacketCodec.MODE_FAT_V1, var charsetName: S
 	 *
 	 *	@throws IOException	if the message contains invalid arguments
 	 */
-	private[ scalaosc ] def getEncodedMessageSize( msg: OSCMessage ) : Int = {
+	private[ osc ] def getEncodedMessageSize( msg: OSCMessage ) : Int = {
 		var result  = ((msg.name.length + 4) & ~3) + ((1+msg.length + 4) & ~3)
 		msg.foreach( v => {
 //			val cl = v.asInstanceOf[ AnyRef ].getClass
@@ -295,7 +295,7 @@ class OSCPacketCodec( mode: Int = OSCPacketCodec.MODE_FAT_V1, var charsetName: S
 		result
 	}
 
-	private[ scalaosc ] def getEncodedBundleSize( bndl: OSCBundle ) : Int = {
+	private[ osc ] def getEncodedBundleSize( bndl: OSCBundle ) : Int = {
 		var result  = 16 + (bndl.length << 2) // name, timetag, size of each bundle element
 		bndl.foreach( result += _.getEncodedSize( this ))
 		result

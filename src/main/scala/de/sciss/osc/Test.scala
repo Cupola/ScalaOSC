@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.IOException
 import java.net.{ InetAddress, InetSocketAddress }
@@ -115,7 +115,7 @@ object Test {
         	  Thread.sleep( 200 )
           }
           
-          import de.sciss.scalaosc.{ OSCMessage => M }
+          import de.sciss.osc.{ OSCMessage => M }
           
 //        trns.send( OSCMessage( "/n_free", 1000 ))
           trns ! M( "/n_free", 1000 )

@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import impl.{TCPReceiver, UDPReceiver}
 import java.io.{ IOException, PrintStream }
@@ -385,8 +385,8 @@ extends OSCChannel with Runnable {
 	@throws( classOf[ IOException ])
 //	protected def channel_=( ch: SelectableChannel ) : Unit
 // XXX just to make it compile
-	private[ scalaosc ] def channel_=( ch: SelectableChannel ) : Unit
-	private[ scalaosc ] def channel: SelectableChannel
+	private[ osc ] def channel_=( ch: SelectableChannel ) : Unit
+	private[ osc ] def channel: SelectableChannel
 
 	@throws( classOf[ IOException ])
 	protected def closeChannel : Unit

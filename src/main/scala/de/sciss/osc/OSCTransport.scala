@@ -1,4 +1,4 @@
-package de.sciss.scalaosc
+package de.sciss.osc
 
 sealed abstract class OSCTransport( val name: String )
 case object UDP extends OSCTransport( "UDP" )

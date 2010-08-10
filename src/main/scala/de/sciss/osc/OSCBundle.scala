@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.{ IOException, PrintStream }
 import java.nio.ByteBuffer
@@ -36,8 +36,8 @@ object OSCBundle {
    *  This is the initial string
    *  of an OSC bundle datagram
    */
-  private[scalaosc] val TAG   = "#bundle"
-  private[scalaosc] val TAGB  = "#bundle\0".getBytes
+  private[osc] val TAG   = "#bundle"
+  private[osc] val TAGB  = "#bundle\0".getBytes
   
   /**
    *  The special timetag value
@@ -48,46 +48,75 @@ object OSCBundle {
  
   private val SECONDS_FROM_1900_TO_1970 = 2208988800L
  
-  /**
-   *  Creates a bundle with timetag given by
-   *  a system clock value in milliseconds since
-   *  jan 1 1970, as returned by System.currentTimeMillis
-   */
-  def millis( abs: Long, packets: OSCPacket* ) : OSCBundle = {
-	val secsSince1900	= abs / 1000 + SECONDS_FROM_1900_TO_1970
-	val secsFractional	= ((abs % 1000) << 32) / 1000
-	val timetag			= (secsSince1900 << 32) | secsFractional
-	new OSCBundle( timetag, packets: _* )
-  }
-  
-  /**
-   *  Creates a bundle with timetag given by
-   *  a relative value in seconds, as required
-   *  for example for scsynth offline rendering
-   */
-  def secs( delta: Double, packets: OSCPacket* ) : OSCBundle = {
-  	 val timetag	= (delta.toLong << 32) + ((delta % 1.0) * 0x100000000L + 0.5).toLong
-	 new OSCBundle( timetag, packets: _* )
-  }
-  
-  /**
-   *  Creates a bundle with special timetag 'now'
-   */
-  def apply( packets: OSCPacket* ) : OSCBundle = {
-	 new OSCBundle( NOW, packets: _* )
-  }
+   /**
+    * Creates a bundle with timetag given by
+    * a system clock value in milliseconds since
+    * jan 1 1970, as returned by System.currentTimeMillis
+    */
+   def millis( abs: Long, packets: OSCPacket* ) : OSCBundle =
+	   new OSCBundle( millisToTimetag( abs ), packets: _* )
 
-  /**
-   *  Creates a bundle with raw formatted timetag
-   */
-  def apply( timetag: Long, packets: OSCPacket* ) : OSCBundle = {
-	 new OSCBundle( timetag, packets: _* )
-  }
+   /**
+    * Creates a bundle with timetag given by
+    * a relative value in seconds, as required
+    * for example for scsynth offline rendering
+    */
+   def secs( delta: Double, packets: OSCPacket* ) : OSCBundle =
+	   new OSCBundle( secsToTimetag( delta ), packets: _* )
+
+   /**
+    * Creates a bundle with special timetag 'now'
+    */
+   def apply( packets: OSCPacket* ) : OSCBundle = new OSCBundle( NOW, packets: _* )
+
+   /**
+    * Creates a bundle with raw formatted timetag
+    */
+   def apply( timetag: Long, packets: OSCPacket* ) : OSCBundle = new OSCBundle( timetag, packets: _* )
+
+   /**
+    * Converts a time value from the system clock value in milliseconds since
+    * jan 1 1970, as returned by System.currentTimeMillis, into a raw timetag.
+    */
+   def millisToTimetag( abs: Long ) : Long = {
+      val secsSince1900    = abs / 1000 + SECONDS_FROM_1900_TO_1970
+      val secsFractional	= ((abs % 1000) << 32) / 1000
+      (secsSince1900 << 32) | secsFractional
+   }
+
+   /**
+    * Converts a relative time value in seconds, as required
+    * for example for scsynth offline rendering, into a raw timetag.
+    */
+   def secsToTimetag( delta: Double ) : Long =
+      (delta.toLong << 32) + ((delta % 1.0) * 0x100000000L + 0.5).toLong
+
+   /**
+    * Converts a raw timetag into a time value from the system clock value in milliseconds since
+    * jan 1 1970, corresponding to what is returned by System.currentTimeMillis.
+    */
+   def timetagToMillis( timetag: Long ) : Long = {
+      val m1 = (timetag & 0xFFFFFFFFL * 1000) >> 32
+      val m2 = ((timetag >> 32) - SECONDS_FROM_1900_TO_1970) * 1000
+      m1 + m2
+   }
+
+   /**
+    * Converts a raw timetag into a relative time value in seconds, as required
+    * for example for scsynth offline rendering. In general, this will return
+    * the amount of seconds since midnight on January 1, 1900, as defined by
+    * the OSC standard.
+    */
+   def timetagToSecs( timetag: Long ) : Double = {
+      val frac = (timetag & 0xFFFFFFFFL).toDouble / 0x100000000L
+      val secs = (timetag >> 32).toDouble
+      secs + frac
+   }
 
 	@throws( classOf[ IOException ])
-	private[scalaosc] def decode( b: ByteBuffer ) : OSCBundle = {
-		val	totalLimit  = b.limit
-		val p			= new scala.collection.mutable.ListBuffer[ OSCPacket ]
+	private[osc] def decode( b: ByteBuffer ) : OSCBundle = {
+		val totalLimit = b.limit
+		val p			   = new scala.collection.mutable.ListBuffer[ OSCPacket ]
 		val timetag 	= b.getLong
 
 		try {
@@ -127,7 +156,7 @@ with LinearSeqLike[ OSCPacket, OSCBundle ]
   
 	def getEncodedSize( c: OSCPacketCodec ) : Int = c.getEncodedBundleSize( this )
 
-	private[scalaosc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
+	private[osc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int ) {
 		stream.print( "  " * nestCount )
 		stream.print( "[ #bundle, " + timetag )
 		val ncInc = nestCount + 1

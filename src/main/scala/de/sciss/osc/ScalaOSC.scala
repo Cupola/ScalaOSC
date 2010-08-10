@@ -20,16 +20,16 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.util.{ MissingResourceException, ResourceBundle }
 
 /**
- *    @version 0.18, 06-Aug-10
+ *    @version 0.19, 10-Aug-10
  */
 object ScalaOSC {
    val name                = "ScalaOSC"
-   val version             = 0.18
+   val version             = 0.19
    val copyright           = "(C)opyright 2008-2010 Hanns Holger Rutz"
 //   private val resBundle	= ResourceBundle.getBundle( "ScalaOSCStrings" )
 

@@ -20,7 +20,7 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.{ IOException, PrintStream }
 import java.nio.{ BufferOverflowException, BufferUnderflowException, ByteBuffer }
@@ -291,5 +291,5 @@ trait OSCPacket {
 	def encode( c: OSCPacketCodec, b: ByteBuffer ) : Unit
 	
 	def getEncodedSize( c: OSCPacketCodec ) : Int
-	private[scalaosc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int )
+	private[osc] def printTextOn( c: OSCPacketCodec, stream: PrintStream, nestCount: Int )
 }

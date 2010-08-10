@@ -28,7 +28,7 @@
  *		02-Jul-07	added codec based factory methods
  */
 
-package de.sciss.scalaosc
+package de.sciss.osc
 
 import java.io.{ IOException, PrintStream }
 import java.net.{ InetSocketAddress, SocketAddress }

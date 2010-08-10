@@ -20,12 +20,12 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc.impl
+package de.sciss.osc.impl
 
 import java.nio.channels.{ClosedChannelException, SelectableChannel, DatagramChannel}
 import java.net.{DatagramPacket, DatagramSocket, SocketAddress, InetSocketAddress}
 import java.io.IOException
-import de.sciss.scalaosc.{UDP, OSCReceiver, OSCPacketCodec}
+import de.sciss.osc.{UDP, OSCReceiver, OSCPacketCodec}
 
 class UDPReceiver( _addr: InetSocketAddress, private var dch: DatagramChannel, _codec: OSCPacketCodec )
 extends OSCReceiver( UDP, _addr, dch == null, _codec ) {
@@ -40,7 +40,7 @@ extends OSCReceiver( UDP, _addr, dch == null, _codec ) {
 //	}
 
 	@throws( classOf[ IOException ])
-	private[ scalaosc ] def channel_=( ch: SelectableChannel ) {
+	private[ osc ] def channel_=( ch: SelectableChannel ) {
 		generalSync.synchronized {
 			if( listening ) throw new IllegalStateException( "Cannot be called while receiver is active" )
 
@@ -52,7 +52,7 @@ extends OSCReceiver( UDP, _addr, dch == null, _codec ) {
 			dch = dchTmp
 		}
 	}
-	private[ scalaosc ] def channel : SelectableChannel = dch
+	private[ osc ] def channel : SelectableChannel = dch
 
 	def localAddress : InetSocketAddress = {
 		generalSync.synchronized {

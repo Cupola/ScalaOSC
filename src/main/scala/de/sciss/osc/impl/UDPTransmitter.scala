@@ -20,10 +20,10 @@
  *	 contact@sciss.de
  */
 
-package de.sciss.scalaosc.impl
+package de.sciss.osc.impl
 
 import java.nio.BufferOverflowException
-import de.sciss.scalaosc._
+import de.sciss.osc._
 import java.net.{SocketAddress, InetSocketAddress}
 import java.io.IOException
 import java.nio.channels.{SelectableChannel, DatagramChannel}
@@ -39,7 +39,7 @@ extends OSCTransmitter( UDP, _addr, dch == null ) {
 		this( new InetSocketAddress( dch.socket.getLocalAddress(), dch.socket.getLocalPort() ), dch, codec )
   	}
 
- 	private[ scalaosc ] def channel : SelectableChannel = {
+ 	private[ osc ] def channel : SelectableChannel = {
 		sync.synchronized {
 			dch
 		}
